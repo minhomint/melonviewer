@@ -27,13 +27,17 @@
             const [shareUrl, setShareUrl] = useState('');
             const [qrDataUrl, setQrDataUrl] = useState('');
             const [showShareModal, setShowShareModal] = useState(false);
+            const [showMigrationAlert, setShowMigrationAlert] = useState(false);
 
             const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
             const STORAGE_KEY = 'manna_data_v2';
 
-            // 초기 로드: URL 공유 데이터 먼저 확인, 없으면 localStorage 로드
+            // 초기 로드: 데이터 마이그레이션 + URL 공유 확인
             useEffect(() => {
-                // URL 파라미터에서 공유 데이터 확인 (쿼리 파라미터 방식)
+                // Step 1: 다른 파일에서 온 데이터 마이그레이션 (localStorage의 모든 키 확인)
+                migrateDataFromOtherFiles();
+
+                // Step 2: URL 공유 데이터 확인
                 const urlParams = new URLSearchParams(window.location.search);
                 const shareParam = urlParams.get('share');
                 
@@ -50,11 +54,9 @@
                         alert('공유 데이터를 성공적으로 불러왔습니다!');
                     } catch (err) {
                         console.error('공유 데이터 로드 실패:', err);
-                        // 실패시 localStorage에서 로드
                         loadFromLocalStorage();
                     }
                 } else {
-                    // URL 데이터 없으면 localStorage에서 로드
                     loadFromLocalStorage();
                 }
 
@@ -63,6 +65,38 @@
                 setCurrentDate(todayStr);
                 setViewMonth(todayStr.substring(0, 7));
             }, []);
+
+            // 다른 파일에서 온 데이터 마이그레이션
+            function migrateDataFromOtherFiles() {
+                const currentData = localStorage.getItem(STORAGE_KEY);
+                
+                // 이미 현재 저장소에 데이터가 있으면 마이그레이션 불필요
+                if (currentData) {
+                    return;
+                }
+
+                // 다른 버전의 storage key 확인 (이전 파일들에서 저장된 데이터)
+                const possibleKeys = [
+                    'manna_data_v1',
+                    'manna_data',
+                    'manna_tracker_data'
+                ];
+
+                for (let key of possibleKeys) {
+                    const oldData = localStorage.getItem(key);
+                    if (oldData) {
+                        try {
+                            const parsed = JSON.parse(oldData);
+                            localStorage.setItem(STORAGE_KEY, oldData);
+                            console.log(`데이터 마이그레이션 완료: ${key} → ${STORAGE_KEY}`);
+                            setShowMigrationAlert(true);
+                            return;
+                        } catch (e) {
+                            console.error(`마이그레이션 실패 (${key}):`, e);
+                        }
+                    }
+                }
+            }
 
             function loadFromLocalStorage() {
                 const saved = localStorage.getItem(STORAGE_KEY);
@@ -570,6 +604,20 @@
                         </div>
                     </div>
 
+                    {/* Migration Alert */}
+                    {showMigrationAlert && (
+                        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg max-w-sm">
+                            <div className="font-semibold mb-1">✓ 데이터 마이그레이션 완료!</div>
+                            <div className="text-sm">이전 파일의 데이터가 자동으로 복구되었습니다.</div>
+                            <button 
+                                onClick={() => setShowMigrationAlert(false)}
+                                className="absolute top-2 right-2 text-lg cursor-pointer"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    )}
+
                     {/* Share Modal */}
                     {showShareModal && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -583,7 +631,7 @@
                                             <img src={qrDataUrl} alt="QR Code" className="mb-3" />
                                             <p className="text-sm text-gray-600 text-center">
                                                 다른 디바이스에서 이 QR 코드를 스캔하세요<br/>
-                                                <span className="text-xs text-green-600">✓ 이제 카톡/텔레그램 링크도 작동합니다!</span>
+                                                <span className="text-xs text-green-600">✓ 카톡/텔레그램에서도 작동합니다!</span>
                                             </p>
                                         </div>
                                     </div>
@@ -633,7 +681,7 @@
                                 </div>
                                 
                                 <p className="text-xs text-gray-500 mt-4">
-                                    ✓ 개선사항: 쿼리 파라미터 방식으로 변경되어 카톡/텔레그램에서도 안정적으로 작동합니다!
+                                    ✓ 쿼리 파라미터 방식으로 모든 앱에서 안정적으로 작동합니다!
                                 </p>
                             </div>
                         </div>
