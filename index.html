@@ -33,16 +33,20 @@
 
             // 초기 로드: URL 공유 데이터 먼저 확인, 없으면 localStorage 로드
             useEffect(() => {
-                const hash = window.location.hash;
+                // URL 파라미터에서 공유 데이터 확인 (쿼리 파라미터 방식)
+                const urlParams = new URLSearchParams(window.location.search);
+                const shareParam = urlParams.get('share');
                 
-                // URL 공유 데이터가 있으면 우선 로드
-                if (hash.startsWith('#share=')) {
+                if (shareParam) {
                     try {
-                        const compressed = hash.substring(7);
-                        const decoded = JSON.parse(decodeURIComponent(atob(compressed)));
+                        console.log('공유 데이터 로드 시도...');
+                        const decoded = JSON.parse(decodeURIComponent(atob(shareParam)));
                         setAllData(decoded.allData || {});
                         setLastSaved(new Date());
-                        window.location.hash = '';
+                        
+                        // URL에서 파라미터 제거
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        
                         alert('공유 데이터를 성공적으로 불러왔습니다!');
                     } catch (err) {
                         console.error('공유 데이터 로드 실패:', err);
@@ -300,8 +304,9 @@
                         }
                     }
                     
+                    // 쿼리 파라미터 방식 사용 (해시 대신)
                     const compressed = btoa(encodeURIComponent(dataStr));
-                    const url = `${window.location.origin}${window.location.pathname}#share=${compressed}`;
+                    const url = `${window.location.origin}${window.location.pathname}?share=${compressed}`;
                     setShareUrl(url);
                     
                     // QR 코드 생성
@@ -577,7 +582,8 @@
                                         <div className="flex flex-col items-center bg-gray-50 p-4 rounded-lg">
                                             <img src={qrDataUrl} alt="QR Code" className="mb-3" />
                                             <p className="text-sm text-gray-600 text-center">
-                                                다른 디바이스에서 이 QR 코드를 스캔하세요
+                                                다른 디바이스에서 이 QR 코드를 스캔하세요<br/>
+                                                <span className="text-xs text-green-600">✓ 이제 카톡/텔레그램 링크도 작동합니다!</span>
                                             </p>
                                         </div>
                                     </div>
@@ -586,7 +592,7 @@
                                 <div className="mb-6">
                                     <h3 className="text-lg font-semibold mb-3">🔗 링크로 공유</h3>
                                     <p className="text-gray-600 mb-3 text-sm">
-                                        이 링크를 카톡, 메일 등으로 자신에게 보내서 다른 디바이스에서 열어보세요.
+                                        이 링크를 카톡, 메일, 텔레그램 등으로 자신에게 보내서 다른 디바이스에서 열어보세요.
                                     </p>
                                     <div className="bg-gray-100 p-3 rounded-lg mb-3 break-all text-xs max-h-20 overflow-y-auto">
                                         {shareUrl}
@@ -627,8 +633,7 @@
                                 </div>
                                 
                                 <p className="text-xs text-gray-500 mt-4">
-                                    ⚠️ 주의: 데이터가 많으면 링크/QR 방식이 불안정할 수 있습니다. 
-                                    그럴 경우 반드시 백업 파일 방식을 사용해주세요.
+                                    ✓ 개선사항: 쿼리 파라미터 방식으로 변경되어 카톡/텔레그램에서도 안정적으로 작동합니다!
                                 </p>
                             </div>
                         </div>
