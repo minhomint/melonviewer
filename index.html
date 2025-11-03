@@ -31,8 +31,36 @@
             const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
             const STORAGE_KEY = 'manna_data_v2';
 
-            // 초기 로드: localStorage에서 데이터 불러오기
+            // 초기 로드: URL 공유 데이터 먼저 확인, 없으면 localStorage 로드
             useEffect(() => {
+                const hash = window.location.hash;
+                
+                // URL 공유 데이터가 있으면 우선 로드
+                if (hash.startsWith('#share=')) {
+                    try {
+                        const compressed = hash.substring(7);
+                        const decoded = JSON.parse(decodeURIComponent(atob(compressed)));
+                        setAllData(decoded.allData || {});
+                        setLastSaved(new Date());
+                        window.location.hash = '';
+                        alert('공유 데이터를 성공적으로 불러왔습니다!');
+                    } catch (err) {
+                        console.error('공유 데이터 로드 실패:', err);
+                        // 실패시 localStorage에서 로드
+                        loadFromLocalStorage();
+                    }
+                } else {
+                    // URL 데이터 없으면 localStorage에서 로드
+                    loadFromLocalStorage();
+                }
+
+                const today = new Date();
+                const todayStr = formatDate(today);
+                setCurrentDate(todayStr);
+                setViewMonth(todayStr.substring(0, 7));
+            }, []);
+
+            function loadFromLocalStorage() {
                 const saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
                     try {
@@ -43,15 +71,7 @@
                         console.error('데이터 로드 실패:', e);
                     }
                 }
-
-                const today = new Date();
-                const todayStr = formatDate(today);
-                setCurrentDate(todayStr);
-                setViewMonth(todayStr.substring(0, 7));
-
-                // URL에서 공유된 데이터 확인
-                loadFromUrl();
-            }, []);
+            }
 
             // 데이터 변경시 자동 저장
             useEffect(() => {
@@ -301,30 +321,6 @@
                 } catch (err) {
                     alert('URL 생성에 실패했습니다. 백업 파일 방식을 사용해주세요.');
                     exportAllData();
-                }
-            }
-
-            function loadFromUrl() {
-                const hash = window.location.hash;
-                if (hash.startsWith('#share=')) {
-                    try {
-                        const compressed = hash.substring(7);
-                        const decoded = JSON.parse(decodeURIComponent(atob(compressed)));
-                        
-                        if (Object.keys(allData).length > 0) {
-                            if (confirm('공유된 데이터를 불러오시겠습니까? (기존 데이터와 병합됩니다)')) {
-                                setAllData(prev => ({ ...prev, ...decoded.allData }));
-                                alert('공유 데이터를 성공적으로 불러왔습니다!');
-                            }
-                        } else {
-                            setAllData(decoded.allData);
-                            alert('공유 데이터를 성공적으로 불러왔습니다!');
-                        }
-                        
-                        window.location.hash = '';
-                    } catch (err) {
-                        console.error('공유 데이터 로드 실패:', err);
-                    }
                 }
             }
 
