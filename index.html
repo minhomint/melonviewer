@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
             min-height: 100vh;
             padding: 20px;
             -webkit-font-smoothing: antialiased;
@@ -262,7 +262,7 @@
 
         .song-input-grid {
             display: grid;
-            grid-template-columns: 60px 1fr 150px;
+            grid-template-columns: 60px 1fr 150px 100px;
             gap: 10px;
             margin-bottom: 15px;
         }
@@ -272,7 +272,7 @@
             color: #424242;
             padding: 8px;
             text-align: center;
-            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
             border-radius: 8px;
         }
 
@@ -355,7 +355,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 900px;
+            min-width: 1000px;
         }
 
         th, td {
@@ -365,7 +365,7 @@
         }
 
         th {
-            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
             color: #424242;
             font-weight: bold;
             position: sticky;
@@ -384,13 +384,19 @@
             width: 200px;
         }
 
+        th:nth-child(4),
+        td:nth-child(4) {
+            text-align: center;
+            width: 80px;
+        }
+
         th:last-child,
         td:last-child {
             text-align: center;
             width: 100px;
         }
 
-        td:not(:nth-child(2)):not(:last-child) {
+        td:not(:nth-child(2)):not(:nth-child(4)):not(:last-child) {
             text-align: right;
         }
 
@@ -513,7 +519,7 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
             padding: 15px;
             border-radius: 12px;
             text-align: center;
@@ -672,6 +678,10 @@
                 gap: 8px;
             }
 
+            .song-input-grid input:first-child {
+                display: none;
+            }
+
             .song-input-header {
                 display: none;
             }
@@ -730,7 +740,7 @@
             }
 
             table {
-                min-width: 700px;
+                min-width: 750px;
                 font-size: 0.85em;
             }
 
@@ -749,17 +759,25 @@
             }
 
             th:nth-child(3),
-            td:nth-child(3),
+            td:nth-child(3) {
+                width: 85px;
+            }
+
             th:nth-child(4),
-            td:nth-child(4),
+            td:nth-child(4) {
+                width: 60px;
+            }
+
             th:nth-child(5),
-            td:nth-child(5) {
-                width: 75px;
+            td:nth-child(5),
+            th:nth-child(6),
+            td:nth-child(6) {
+                width: 70px;
                 font-size: 0.85em;
             }
 
-            th:nth-child(6),
-            td:nth-child(6) {
+            th:nth-child(7),
+            td:nth-child(7) {
                 width: 65px;
             }
 
@@ -873,7 +891,7 @@
 
             table {
                 font-size: 0.8em;
-                min-width: 650px;
+                min-width: 700px;
             }
 
             th, td {
@@ -891,17 +909,25 @@
             }
 
             th:nth-child(3),
-            td:nth-child(3),
+            td:nth-child(3) {
+                width: 75px;
+            }
+
             th:nth-child(4),
-            td:nth-child(4),
+            td:nth-child(4) {
+                width: 50px;
+            }
+
             th:nth-child(5),
-            td:nth-child(5) {
+            td:nth-child(5),
+            th:nth-child(6),
+            td:nth-child(6) {
                 width: 60px;
                 font-size: 0.8em;
             }
 
-            th:nth-child(6),
-            td:nth-child(6) {
+            th:nth-child(7),
+            td:nth-child(7) {
                 width: 55px;
             }
 
@@ -997,6 +1023,7 @@
                 <div class="song-input-header">순번</div>
                 <div class="song-input-header">곡명</div>
                 <div class="song-input-header">감상자수</div>
+                <div class="song-input-header">순위</div>
             </div>
             <div id="songInputs"></div>
             <button class="btn-save" onclick="saveData()">💾 저장하기</button>
@@ -1059,7 +1086,7 @@
             "그날",
             "오십",
             "내 곁에 있어줘",
-            "100위 곡"
+            "100위 곡()"
         ];
 
         let database, isAdmin = false;
@@ -1147,6 +1174,7 @@
                     <input type="text" value="${index + 1}" readonly>
                     <input type="text" id="song_${index}" value="${song}" placeholder="곡명">
                     <input type="number" id="count_${index}" placeholder="감상자수" min="0">
+                    <input type="number" id="rank_${index}" placeholder="순위" min="1">
                 `;
                 container.appendChild(div);
             });
@@ -1169,12 +1197,14 @@
             for (let i = 0; i < DEFAULT_SONGS.length; i++) {
                 const songName = document.getElementById(`song_${i}`).value.trim();
                 const count = parseInt(document.getElementById(`count_${i}`).value) || 0;
+                const chartRank = parseInt(document.getElementById(`rank_${i}`).value) || null;
                 
                 if (songName) {
                     data.push({
                         rank: i + 1,
                         name: songName,
-                        count: count
+                        count: count,
+                        chartRank: chartRank
                     });
                 }
             }
@@ -1253,6 +1283,7 @@
                             <th>순번</th>
                             <th>곡명</th>
                             <th>감상자수</th>
+                            <th>순위</th>
                             <th>전날 대비</th>
                             <th>증감률</th>
                             <th>멜론 차트</th>
@@ -1278,12 +1309,14 @@
 
                 const rowClass = item.rank <= 3 ? 'top-song' : '';
                 const melonSearchUrl = `https://www.melon.com/search/total/index.htm?q=${encodeURIComponent(item.name)}&section=&searchGnbYn=Y&kkoSpl=N&kkoDpType=&linkOrText=T&ipath=srch_form`;
+                const rankDisplay = item.chartRank ? item.chartRank : '-';
 
                 html += `
                     <tr class="${rowClass}">
                         <td>${item.rank}</td>
                         <td><span class="clickable-song" onclick="showSongTrend('${item.name.replace(/'/g, "\\\'")}')">${item.name}</span></td>
                         <td>${item.count.toLocaleString()}</td>
+                        <td>${rankDisplay}</td>
                         <td class="${trendClass}">${trendSymbol} ${Math.abs(diff).toLocaleString()}</td>
                         <td class="${trendClass}">${diffPercent > 0 ? '+' : ''}${diffPercent}%</td>
                         <td><a href="${melonSearchUrl}" target="_blank" class="btn-melon-link">🔗 멜론</a></td>
