@@ -2189,7 +2189,7 @@
             const rank100Count = rank100Song ? rank100Song.count : 0;
             console.log('100위 기준 감상자수:', rank100Count);
 
-            // 데이터 정렬: 순위 진입곡(1-99위) → 100위 곡 → 순위 밖 곡
+            // 데이터 정렬: 순위 진입곡(1-99위) → 100위 곡 → 100위 초과 순위 → 순위 밖 곡(100위에 가까운 순)
             const sortedData = [...data].sort((a, b) => {
                 const aIs100 = a.chartRank === 100;
                 const bIs100 = b.chartRank === 100;
@@ -2207,22 +2207,29 @@
                 if (aIs100 && !bIs100) return -1;
                 if (!aIs100 && bIs100) return 1;
                 
-                // 100위 초과 순위는 그 다음
+                // 100위 초과 순위는 그 다음 (순위 순서대로)
+                if (aHasRank && !aIs100 && !aInTop99 && bHasRank && !bIs100 && !bInTop99) {
+                    return a.chartRank - b.chartRank;
+                }
                 if (aHasRank && !aIs100 && !aInTop99 && !bHasRank) return -1;
                 if (!aHasRank && bHasRank && !bIs100 && !bInTop99) return 1;
                 
-                // 순위 있는 것끼리는 순위 순서
-                if (aHasRank && bHasRank) return a.chartRank - b.chartRank;
+                // ✨✨✨ 순위 밖 곡들: 100위와의 차이가 적은 순서로 정렬 (100위에 가까운 곡이 먼저)
+                if (!aHasRank && !bHasRank && rank100Count > 0) {
+                    const aGap = Math.abs(rank100Count - a.count);
+                    const bGap = Math.abs(rank100Count - b.count);
+                    return aGap - bGap; // 차이가 적을수록 앞에 (100위에 가까울수록 앞에)
+                }
                 
                 // 나머지는 원래 순서 유지
                 return data.indexOf(a) - data.indexOf(b);
             });
 
-            console.log('정렬된 데이터:', sortedData.map(d => `${d.name} (${d.chartRank || '순위없음'}위)`));
+            console.log('정렬된 데이터:', sortedData.map(d => `${d.name} (${d.chartRank || '순위없음'}위, ${d.count}명)`));
 
             // 차트 라벨 생성 (모바일/PC 구분)
             const isMobile = window.innerWidth <= 768;
-            const maxLabelLength = isMobile ? 4 : 10;
+            const maxLabelLength = isMobile ? 6 : 10;
             
             const labels = sortedData.map(item => {
                 let label = item.name.length > maxLabelLength ? item.name.substring(0, maxLabelLength) + '...' : item.name;
