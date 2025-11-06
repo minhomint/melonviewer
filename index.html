@@ -145,12 +145,12 @@
             letter-spacing: 0.01em;
         }
 
-        /* ========== 원클릭 링크 섹션 ========== */
+        /* ========== 원클릭 링크 섹션 (QR 코드 포함) ========== */
         .quick-links {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-md);
         }
 
         .quick-links-title {
@@ -159,56 +159,112 @@
             color: var(--primary);
             text-align: center;
             letter-spacing: 0.02em;
-            white-space: nowrap;
         }
 
         .quick-links-container {
             display: flex;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-lg);
             justify-content: center;
             flex-wrap: wrap;
+        }
+
+        .quick-link-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, white 0%, var(--gray-50) 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: var(--radius-xl);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+            min-width: 160px;
+        }
+
+        .quick-link-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .qr-label {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .qr-code {
+            width: 90px;
+            height: 90px;
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .quick-link-card:hover .qr-code {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 199, 60, 0.1);
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .quick-link-btn {
             display: inline-flex;
             align-items: center;
-            gap: var(--spacing-sm);
-            padding: var(--spacing-md) var(--spacing-lg);
-            background: linear-gradient(135deg, white 0%, var(--gray-50) 100%);
-            border: 2px solid var(--primary);
-            border-radius: var(--radius-xl);
+            justify-content: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border: none;
+            border-radius: var(--radius-lg);
             text-decoration: none;
-            color: var(--gray-800);
+            color: white;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-sm);
+            width: 100%;
         }
 
         .quick-link-btn:hover {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            color: white;
-            transform: translateY(-2px);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            transform: scale(1.05);
             box-shadow: var(--shadow-md);
         }
 
         .quick-link-btn:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         .quick-link-icon {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
         }
 
         .quick-link-label {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
+            line-height: 1.2;
         }
 
         .quick-link-device {
-            font-size: 0.75rem;
-            opacity: 0.7;
+            font-size: 0.7rem;
+            opacity: 0.9;
         }
 
         /* ========== 관리자 버튼 ========== */
@@ -789,9 +845,9 @@
         }
 
         .rank-badge.out-chart {
-            background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
-            color: #075985;
-            border: 1px solid #7DD3FC;
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #047857;
+            border: 1px solid #6EE7B7;
         }
 
         /* ========== 데이터 입력 폼 ========== */
@@ -903,6 +959,62 @@
 
         .btn-save:active {
             transform: translateY(0);
+        }
+
+        /* 백업 버튼들 */
+        .backup-section {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 2px solid var(--gray-200);
+        }
+
+        .btn-backup {
+            flex: 1;
+            padding: var(--spacing-md);
+            border: 2px solid var(--secondary);
+            background: white;
+            color: var(--secondary);
+            border-radius: var(--radius-lg);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+
+        .btn-backup:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-backup.excel {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .btn-backup.excel:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        /* 자동 저장 상태 표시 */
+        .autosave-status {
+            text-align: center;
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+            margin-top: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        .autosave-status.saved {
+            color: var(--success);
         }
 
         /* ========== 곡 추이 모달 ========== */
@@ -1148,19 +1260,16 @@
             }
 
             .quick-links-container {
-                flex-direction: column;
                 gap: var(--spacing-sm);
             }
 
-            .quick-link-btn {
-                width: 100%;
-                justify-content: center;
-                padding: var(--spacing-sm) var(--spacing-md);
-                font-size: 0.8125rem;
+            .quick-link-card {
+                min-width: 140px;
             }
 
-            .quick-link-icon {
-                font-size: 1.1rem;
+            .qr-code {
+                width: 75px;
+                height: 75px;
             }
 
             .song-input-grid {
@@ -1259,24 +1368,39 @@
                     <div class="sub-title">"우리의 스트리밍, 지금 어디까지 왔나"</div>
                 </div>
                 
-                <!-- 원클릭 링크 섹션 -->
+                <!-- 원클릭 링크 섹션 (QR 코드 포함) -->
                 <div class="quick-links">
                     <div class="quick-links-title">【멜론 원클릭】 2025.10.14ver [아날로그 볼륨.1]</div>
                     <div class="quick-links-container">
-                        <a href="https://vo.la/TEIx4gn" target="_blank" class="quick-link-btn">
-                            <span class="quick-link-icon">🤖</span>
-                            <span class="quick-link-label">
-                                <span>멜론 안드로이드</span>
-                                <span class="quick-link-device">(삼성·엘지)</span>
-                            </span>
-                        </a>
-                        <a href="https://lrl.kr/WIYj" target="_blank" class="quick-link-btn">
-                            <span class="quick-link-icon">🍎</span>
-                            <span class="quick-link-label">
-                                <span>멜론 아이폰</span>
-                                <span class="quick-link-device">(iOS)</span>
-                            </span>
-                        </a>
+                        <!-- 안드로이드 카드 -->
+                        <div class="quick-link-card">
+                            <div class="qr-section">
+                                <div class="qr-code">
+                                    <img src="Android.png" alt="안드로이드 QR 코드">
+                                </div>
+                            </div>
+                            <a href="https://vo.la/TEIx4gn" target="_blank" class="quick-link-btn">
+                                <span class="quick-link-label">
+                                    <span>멜론 안드로이드</span>
+                                    <span class="quick-link-device">(삼성·엘지)</span>
+                                </span>
+                            </a>
+                        </div>
+
+                        <!-- 아이폰 카드 -->
+                        <div class="quick-link-card">
+                            <div class="qr-section">
+                                <div class="qr-code">
+                                    <img src="iphon.png" alt="아이폰 QR 코드">
+                                </div>
+                            </div>
+                            <a href="https://lrl.kr/WIYj" target="_blank" class="quick-link-btn">
+                                <span class="quick-link-label">
+                                    <span>멜론 아이폰</span>
+                                    <span class="quick-link-device">(iOS)</span>
+                                </span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1303,6 +1427,17 @@
                     </div>
                     <div id="songInputs"></div>
                     <button class="btn-save" onclick="saveData()">💾 저장하기</button>
+                    <div class="autosave-status" id="autosaveStatus"></div>
+                    
+                    <!-- 백업 섹션 -->
+                    <div class="backup-section">
+                        <button class="btn-backup" onclick="backupToJSON()">
+                            📦 JSON 백업
+                        </button>
+                        <button class="btn-backup excel" onclick="backupToExcel()">
+                            📊 Excel 다운로드
+                        </button>
+                    </div>
                 </div>
 
                 <!-- 차트 + 테이블 -->
@@ -1320,7 +1455,7 @@
                                 <span>100위 기준선</span>
                             </div>
                             <div class="legend-item">
-                                <span class="legend-dot" style="background: #7DD3FC;"></span>
+                                <span class="legend-dot" style="background: #6EE7B7;"></span>
                                 <span>순위 밖</span>
                             </div>
                         </div>
@@ -1399,6 +1534,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -1424,6 +1562,8 @@
 
         let database, isAdmin = false, barChart, trendChart;
         let currentDate = new Date(), selectedDate = null;
+        let hasUnsavedChanges = false;
+        let autosaveTimer = null;
 
         // Firebase 초기화
         try {
@@ -1561,6 +1701,7 @@
             const dateKey = getDateKey(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
             let existingData = {};
             
+            // Firebase에서 기존 데이터 불러오기
             if (database) {
                 try {
                     const snapshot = await database.ref(`melon_chart/${dateKey}`).once('value');
@@ -1572,6 +1713,30 @@
                     }
                 } catch (error) {
                     console.error('기존 데이터 로드 오류:', error);
+                }
+            }
+            
+            // localStorage에서 임시 저장된 데이터 확인
+            const autosavedStr = localStorage.getItem(`autosave_${dateKey}`);
+            if (autosavedStr) {
+                try {
+                    const autosavedData = JSON.parse(autosavedStr);
+                    // 임시 저장 데이터가 있으면 사용 (Firebase 데이터보다 우선)
+                    Object.keys(autosavedData).forEach(songName => {
+                        if (!existingData[songName] || autosavedData[songName].count !== existingData[songName].count) {
+                            existingData[songName] = {
+                                count: autosavedData[songName].count,
+                                chartRank: autosavedData[songName].chartRank
+                            };
+                        }
+                    });
+                    
+                    // 임시 저장 데이터가 있다는 알림
+                    const status = document.getElementById('autosaveStatus');
+                    status.textContent = '📝 임시 저장된 데이터를 불러왔습니다';
+                    status.className = 'autosave-status';
+                } catch (error) {
+                    console.error('임시 저장 데이터 로드 오류:', error);
                 }
             }
             
@@ -1591,6 +1756,10 @@
                 `;
                 container.appendChild(div);
             });
+            
+            // 자동 저장 설정
+            hasUnsavedChanges = false;
+            setupAutosave();
         }
 
         async function saveData() {
@@ -1628,6 +1797,15 @@
             try {
                 const dateKey = getDateKey(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
                 await database.ref(`melon_chart/${dateKey}`).set(data);
+                
+                // 저장 성공 후 처리
+                hasUnsavedChanges = false;
+                localStorage.removeItem(`autosave_${dateKey}`);
+                
+                const status = document.getElementById('autosaveStatus');
+                status.textContent = '✅ 저장 완료!';
+                status.className = 'autosave-status saved';
+                
                 alert('✅ 데이터가 저장되었습니다!');
                 document.getElementById('dataForm').classList.remove('show');
                 loadData();
@@ -1753,12 +1931,12 @@
                     return 'rgba(239, 68, 68, 0.85)'; // 100위: 빨강
                 }
                 if (item.chartRank && item.chartRank < 100) return 'rgba(0, 199, 60, 0.85)'; // 1-99위: 초록
-                return 'rgba(125, 211, 252, 0.85)'; // 순위 밖: 연한 하늘색
+                return 'rgba(167, 243, 208, 0.85)'; // 순위 밖: 연한 민트
             });
             const borderColors = sortedData.map(item => {
                 if (item.chartRank === 100) return 'rgba(239, 68, 68, 1)';
                 if (item.chartRank && item.chartRank < 100) return 'rgba(0, 199, 60, 1)';
-                return 'rgba(56, 189, 248, 1)'; // 순위 밖: 하늘색
+                return 'rgba(110, 231, 183, 1)'; // 순위 밖: 민트
             });
 
             // 차트 렌더링
@@ -2026,7 +2204,176 @@
         // 초기 렌더링
         window.addEventListener('DOMContentLoaded', function() {
             renderCalendar();
+            
+            // 페이지 나갈 때 저장 안 된 변경사항 경고
+            window.addEventListener('beforeunload', function(e) {
+                if (hasUnsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = '저장하지 않은 변경사항이 있습니다. 페이지를 나가시겠습니까?';
+                    return e.returnValue;
+                }
+            });
         });
+
+        // 자동 저장 (localStorage에 임시 저장)
+        function autoSave() {
+            if (!selectedDate) return;
+            
+            const dateKey = getDateKey(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+            const tempData = {};
+            
+            for (let i = 0; i < DEFAULT_SONGS.length; i++) {
+                const songName = document.getElementById(`song_${i}`)?.value.trim();
+                const count = document.getElementById(`count_${i}`)?.value;
+                const chartRank = document.getElementById(`rank_${i}`)?.value;
+                
+                if (songName) {
+                    tempData[songName] = {
+                        count: count || '',
+                        chartRank: chartRank || ''
+                    };
+                }
+            }
+            
+            localStorage.setItem(`autosave_${dateKey}`, JSON.stringify(tempData));
+            
+            // 상태 표시
+            const status = document.getElementById('autosaveStatus');
+            status.textContent = '✓ 임시 저장됨';
+            status.className = 'autosave-status saved';
+            
+            setTimeout(() => {
+                status.textContent = '';
+            }, 2000);
+        }
+
+        // 입력 필드 변경 감지
+        function setupAutosave() {
+            const inputs = document.querySelectorAll('#songInputs input');
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    hasUnsavedChanges = true;
+                    
+                    // 디바운스: 1초 후에 자동 저장
+                    clearTimeout(autosaveTimer);
+                    autosaveTimer = setTimeout(autoSave, 1000);
+                    
+                    // 상태 표시
+                    const status = document.getElementById('autosaveStatus');
+                    status.textContent = '변경사항 있음...';
+                    status.className = 'autosave-status';
+                });
+            });
+        }
+
+        // JSON 백업
+        async function backupToJSON() {
+            if (!database) {
+                alert('Firebase에 연결되지 않았습니다.');
+                return;
+            }
+
+            try {
+                const snapshot = await database.ref('melon_chart').once('value');
+                const data = snapshot.val();
+                
+                if (!data) {
+                    alert('백업할 데이터가 없습니다.');
+                    return;
+                }
+
+                const jsonStr = JSON.stringify(data, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                
+                a.href = url;
+                a.download = `WeStreamRank_전체백업.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // 날짜 정보 표시
+                const dates = Object.keys(data).sort();
+                const dateInfo = dates.length > 0 ? 
+                    `\n기간: ${dates[0]} ~ ${dates[dates.length - 1]} (총 ${dates.length}일)` : '';
+                
+                alert(`✅ JSON 백업 완료!${dateInfo}`);
+            } catch (error) {
+                console.error('백업 실패:', error);
+                alert('❌ 백업 실패: ' + error.message);
+            }
+        }
+
+        // Excel 백업
+        async function backupToExcel() {
+            if (!database) {
+                alert('Firebase에 연결되지 않았습니다.');
+                return;
+            }
+
+            try {
+                const snapshot = await database.ref('melon_chart').once('value');
+                const data = snapshot.val();
+                
+                if (!data) {
+                    alert('백업할 데이터가 없습니다.');
+                    return;
+                }
+
+                // 엑셀 데이터 구조 생성
+                const excelData = [];
+                
+                // 헤더
+                excelData.push(['날짜', '순번', '곡명', '감상자수', '멜론 순위']);
+                
+                // 데이터 정렬 (날짜순)
+                const sortedDates = Object.keys(data).sort();
+                
+                sortedDates.forEach(date => {
+                    const dayData = data[date];
+                    if (Array.isArray(dayData)) {
+                        dayData.forEach(song => {
+                            excelData.push([
+                                date,
+                                song.rank || '',
+                                song.name || '',
+                                song.count || 0,
+                                song.chartRank || ''
+                            ]);
+                        });
+                    }
+                });
+
+                // 워크북 생성
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+                
+                // 열 너비 설정
+                ws['!cols'] = [
+                    { wch: 12 },  // 날짜
+                    { wch: 6 },   // 순번
+                    { wch: 30 },  // 곡명
+                    { wch: 12 },  // 감상자수
+                    { wch: 10 }   // 순위
+                ];
+                
+                XLSX.utils.book_append_sheet(wb, ws, 'WeStream Rank');
+                
+                // 파일 다운로드 (고정 파일명)
+                XLSX.writeFile(wb, `WeStreamRank_전체데이터.xlsx`);
+                
+                // 날짜 정보 표시
+                const dateInfo = sortedDates.length > 0 ? 
+                    `\n기간: ${sortedDates[0]} ~ ${sortedDates[sortedDates.length - 1]} (총 ${sortedDates.length}일)` : '';
+                
+                alert(`✅ Excel 다운로드 완료!${dateInfo}`);
+            } catch (error) {
+                console.error('Excel 다운로드 실패:', error);
+                alert('❌ Excel 다운로드 실패: ' + error.message);
+            }
+        }
     </script>
 </body>
 </html>
