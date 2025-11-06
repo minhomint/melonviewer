@@ -1489,6 +1489,32 @@
 
             .chart-card {
                 min-height: auto;
+                padding: var(--spacing-sm);
+            }
+            
+            .chart-card .card-title {
+                margin-bottom: var(--spacing-sm);
+                font-size: 1rem;
+            }
+            
+            .chart-legend {
+                margin-bottom: var(--spacing-sm);
+                gap: var(--spacing-sm);
+            }
+            
+            .legend-item {
+                font-size: 0.75rem;
+            }
+            
+            .legend-dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .chart-note {
+                margin-bottom: var(--spacing-sm);
+                padding: var(--spacing-sm);
+                font-size: 0.75rem;
             }
 
             .table-card {
@@ -1832,7 +1858,7 @@
         const DEFAULT_SONGS = [
             "내 이름 아시죠", "남자는 말합니다", "풍악을 울려라!", "잊으리오", "흘로된 사랑",
             "으라차차차", "한계령", "인생일기", "내게 남은 사랑을 드릴께요", "그저친구",
-            "마음의 나이", "내 마음에 비친 내모습", "그날", "오십", "내 곁에 있어줘", "100위 곡()"
+            "마음의 나이", "내 마음에 비친 내모습", "그날", "오십", "내곁에 있어주", "100위 곡()"
         ];
 
         let database, isAdmin = false, barChart, trendChart;
@@ -2252,6 +2278,9 @@
                     maintainAspectRatio: false,
                     layout: {
                         padding: {
+                            left: isMobile ? 0 : 0,
+                            right: isMobile ? 0 : 0,
+                            top: isMobile ? 5 : 0,
                             bottom: isMobile ? 10 : 0
                         }
                     },
@@ -2292,8 +2321,17 @@
                                 color: 'rgba(0, 0, 0, 0.05)'
                             },
                             ticks: {
-                                font: { size: 12 },
+                                font: { size: isMobile ? 9 : 12 },
+                                padding: isMobile ? 4 : 8,
                                 callback: function(value) {
+                                    if (isMobile) {
+                                        // 모바일에서 천 단위 축약 (k) - 정수로
+                                        if (value >= 1000) {
+                                            const k = value / 1000;
+                                            return k % 1 === 0 ? k + 'k' : k.toFixed(1) + 'k';
+                                        }
+                                        return value;
+                                    }
                                     return value.toLocaleString();
                                 }
                             }
@@ -2306,6 +2344,7 @@
                                 maxRotation: isMobile ? 70 : 45,
                                 minRotation: isMobile ? 70 : 45,
                                 font: { size: isMobile ? 8 : 10 },
+                                padding: isMobile ? 2 : 8,
                                 autoSkip: false,
                                 maxTicksLimit: isMobile ? undefined : undefined
                             }
