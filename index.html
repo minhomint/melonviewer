@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MELON 일간 감상자수</title>
+    <title>WeStream Rank</title>
     <style>
         * {
             margin: 0;
@@ -11,11 +11,62 @@
             box-sizing: border-box;
         }
 
+        :root {
+            /* 색상 시스템 */
+            --primary: #00C73C;
+            --primary-dark: #00A030;
+            --primary-light: #E8F5E9;
+            --secondary: #14b8a6;
+            --accent: #00E647;
+            
+            /* 중립 색상 */
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            
+            /* 상태 색상 */
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --info: #3B82F6;
+            
+            /* 그림자 */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* 간격 */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            
+            /* 반경 */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 50%, #F0FDFA 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: var(--spacing-md);
+            color: var(--gray-800);
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -24,237 +75,412 @@
             margin: 0 auto;
         }
 
-        /* 헤더 - 모바일 최적화 */
+        /* ========== 헤더 ========== */
         .header {
             background: white;
-            border: 3px solid #00C73C;
-            border-radius: 15px;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 12px rgba(0, 199, 60, 0.15);
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            box-shadow: var(--shadow-lg);
             text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border: 3px solid var(--primary);
+            position: relative;
+            overflow: hidden;
         }
 
-        .header h1 {
-            color: #00C73C;
-            font-size: 1.3em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-weight: 900;
-            text-shadow: 2px 2px 4px rgba(0, 199, 60, 0.2);
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 199, 60, 0.1), transparent);
+            animation: shine 3s infinite;
         }
 
-        .melon-logo {
-            font-family: 'Arial Black', sans-serif;
-            font-weight: 900;
-            font-size: 0.75em;
-            color: #00C73C;
-            letter-spacing: -0.05em;
-            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        .header-title {
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-title {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--spacing-sm);
         }
 
-        /* 관리자 버튼 */
+        .title-divider {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            margin: var(--spacing-sm) auto;
+            border-radius: 2px;
+        }
+
+        .sub-title {
+            font-size: 1rem;
+            color: var(--gray-600);
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        /* ========== 원클릭 링크 섹션 ========== */
+        .quick-links {
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-xl);
+            border-top: 2px dashed var(--gray-200);
+        }
+
+        .quick-links-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        .quick-links-container {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: linear-gradient(135deg, white 0%, var(--gray-50) 100%);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-xl);
+            text-decoration: none;
+            color: var(--gray-800);
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-link-btn:hover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-link-btn:active {
+            transform: translateY(0);
+        }
+
+        .quick-link-icon {
+            font-size: 1.25rem;
+        }
+
+        .quick-link-label {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .quick-link-device {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        /* ========== 관리자 버튼 ========== */
         .admin-btn {
             position: fixed;
-            top: 15px;
-            right: 15px;
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--secondary) 0%, #2dd4bf 100%);
             border-radius: 50%;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
-            transition: all 0.3s;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
         }
 
         .admin-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(20, 184, 166, 0.6);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .admin-btn:active {
+            transform: scale(0.95);
         }
 
         .admin-btn.logged-in {
-            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
         }
 
         .admin-btn svg {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             fill: white;
         }
 
-        /* 로그인 모달 */
+        /* ========== 모달 ========== */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
             z-index: 2000;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal.show { display: flex; }
 
         .modal-content {
             background: white;
-            padding: 25px;
-            border-radius: 20px;
+            padding: var(--spacing-2xl);
+            border-radius: var(--radius-2xl);
             max-width: 90%;
-            width: 350px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            width: 400px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal-content h2 {
-            color: #00C73C;
-            margin-bottom: 20px;
+            color: var(--primary);
+            margin-bottom: var(--spacing-lg);
             text-align: center;
-            font-size: 1.3em;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
         .modal-content input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 15px;
-            margin-bottom: 15px;
-            transition: border-color 0.3s;
+            padding: var(--spacing-md);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            margin-bottom: var(--spacing-lg);
+            transition: all 0.2s;
         }
 
         .modal-content input:focus {
             outline: none;
-            border-color: #00C73C;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 199, 60, 0.1);
         }
 
         .modal-buttons {
             display: flex;
-            gap: 10px;
+            gap: var(--spacing-md);
         }
 
         .modal-buttons button {
             flex: 1;
-            padding: 12px;
+            padding: var(--spacing-md);
             border: none;
-            border-radius: 10px;
+            border-radius: var(--radius-lg);
             cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            transition: all 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s;
         }
 
         .btn-login {
-            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             color: white;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-cancel {
-            background: #eeeeee;
-            color: #757575;
+            background: var(--gray-100);
+            color: var(--gray-700);
         }
 
         .btn-cancel:hover {
-            background: #e0e0e0;
+            background: var(--gray-200);
         }
 
-        /* 레이아웃 */
-        .main-content {
+        /* ========== 레이아웃 ========== */
+        .top-section {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
         }
 
-        /* 달력 카드 - 컴팩트 */
+        .bottom-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        /* ========== 카드 공통 스타일 ========== */
+        .card {
+            background: white;
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* ========== 달력 ========== */
         .calendar-card {
             background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            border: 1px solid #e5e7eb;
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .firebase-status {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #92400E;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid #FCD34D;
+        }
+
+        .firebase-status.success {
+            background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
+            color: #065F46;
+            border-color: #6EE7B7;
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .calendar-title-group {
+            text-align: center;
+            flex: 1;
         }
 
         .calendar-year {
-            font-size: 0.9em;
-            font-weight: bold;
-            color: #00C73C;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            margin-bottom: var(--spacing-xs);
         }
 
         .calendar-month {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #00C73C;
-            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
         }
 
         .calendar-nav {
             display: flex;
-            gap: 6px;
+            gap: var(--spacing-sm);
         }
 
         .nav-btn {
-            background: transparent;
-            border: 2px solid #00C73C;
-            color: #00C73C;
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
+            background: white;
+            border: 2px solid var(--gray-200);
+            color: var(--gray-600);
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            font-size: 14px;
+            font-size: 1rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .nav-btn:hover {
-            background: #00C73C;
+            background: var(--primary);
+            border-color: var(--primary);
             color: white;
+            transform: scale(1.05);
         }
 
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
-            margin-top: 10px;
-            margin-bottom: 6px;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-md);
             text-align: center;
         }
 
         .weekday {
-            padding: 3px;
-            font-size: 0.7em;
-            font-weight: 600;
-            color: #616161;
+            padding: var(--spacing-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gray-500);
+            text-transform: uppercase;
         }
 
-        .weekday:first-child { color: #ef5350; }
-        .weekday:last-child { color: #42a5f5; }
+        .weekday:first-child { color: var(--error); }
+        .weekday:last-child { color: var(--info); }
 
         .calendar-days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
+            gap: var(--spacing-xs);
         }
 
         .day {
@@ -262,50 +488,48 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-            font-size: 0.8em;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            font-size: 0.875rem;
+            background: var(--gray-50);
             position: relative;
-            background: #f9fafb;
-            min-height: 32px;
-            max-height: 38px;
+            border: 2px solid transparent;
         }
 
-        .day:hover {
-            background: #ccfbf1;
-            transform: scale(1.08);
+        .day:hover:not(.empty) {
+            background: var(--primary-light);
+            transform: scale(1.1);
+            border-color: var(--primary);
+            z-index: 10;
         }
 
         .day.selected {
-            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             color: white;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.3);
+            font-weight: 700;
+            box-shadow: var(--shadow-md);
+            transform: scale(1.05);
+            border-color: var(--primary);
         }
 
         .day.has-data {
-            background: #ffffff;
-            font-weight: 600;
-            border: 2px solid #00C73C;
-            color: #0f766e;
-        }
-
-        .day.has-data:hover {
-            border-color: #00E647;
-            transform: scale(1.08);
+            background: white;
+            font-weight: 700;
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
 
         .day.has-data::after {
             content: '';
             position: absolute;
-            bottom: 3px;
+            bottom: 4px;
             left: 50%;
             transform: translateX(-50%);
-            width: 3px;
-            height: 3px;
-            background: #00C73C;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
             border-radius: 50%;
         }
 
@@ -320,385 +544,606 @@
 
         .btn-add-date {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            padding: var(--spacing-md);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: bold;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: none;
-            margin-top: 12px;
+            margin-top: var(--spacing-lg);
         }
 
-        .btn-add-date.show {
+        .btn-add-date.show { 
             display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .btn-add-date:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
+            box-shadow: var(--shadow-lg);
         }
 
-        /* Firebase 상태 */
-        .firebase-status {
-            background: #fff9c4;
-            color: #f57f17;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            text-align: center;
-            font-size: 0.85em;
-            font-weight: 500;
-        }
-
-        .firebase-status.success {
-            background: #c8e6c9;
-            color: #2e7d32;
-        }
-
-        .firebase-status.error {
-            background: #ffcdd2;
-            color: #c62828;
-        }
-
-        /* 데이터 입력 폼 */
-        .data-form {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            display: none;
-        }
-
-        .data-form.show {
-            display: block;
-        }
-
-        .data-form h3 {
-            color: #00C73C;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .song-input-grid {
-            display: grid;
-            grid-template-columns: 35px 1fr 90px 60px;
-            gap: 4px;
-            margin-bottom: 10px;
-            font-size: 0.8em;
-        }
-
-        .song-input-header {
-            font-weight: bold;
-            color: #424242;
-            padding: 6px;
-            text-align: center;
-            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
-            border-radius: 6px;
-            font-size: 0.85em;
-        }
-
-        .song-input-grid input {
-            padding: 6px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 13px;
-            transition: border-color 0.3s;
-        }
-
-        .song-input-grid input:focus {
-            outline: none;
-            border-color: #14b8a6;
-        }
-
-        .song-input-grid input[type="number"] {
-            text-align: right;
-        }
-
-        .btn-save {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 15px;
-        }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
-        }
-
-        /* 차트 - 강조! */
+        /* ========== 차트 ========== */
         .chart-card {
             background: white;
-            border-radius: 15px;
-            padding: 15px;
-            padding-bottom: 20px;
-            box-shadow: 0 8px 24px rgba(0, 199, 60, 0.2);
-            border: 3px solid #00C73C;
-            animation: chartPulse 2s ease-in-out infinite;
-            position: relative;
-            overflow: hidden;
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow);
+            border: 2px solid var(--primary-light);
         }
 
-        .chart-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(0, 199, 60, 0.1), transparent);
-            animation: chartShine 3s ease-in-out infinite;
+        .chart-card .card-title {
+            color: var(--primary);
+            font-size: 1.375rem;
         }
 
-        @keyframes chartPulse {
-            0%, 100% { box-shadow: 0 8px 24px rgba(0, 199, 60, 0.2); }
-            50% { box-shadow: 0 8px 32px rgba(0, 199, 60, 0.4); }
+        .chart-note {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--primary);
         }
 
-        @keyframes chartShine {
-            0% { transform: translate(-100%, -100%) rotate(45deg); }
-            100% { transform: translate(100%, 100%) rotate(45deg); }
+        .chart-legend {
+            display: flex;
+            gap: var(--spacing-lg);
+            justify-content: center;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
         }
 
-        .chart-card h3 {
-            color: #00C73C;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            font-weight: 900;
-            text-shadow: 1px 1px 2px rgba(0, 199, 60, 0.2);
-            position: relative;
-            z-index: 1;
+        .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--spacing-sm);
+            font-size: 0.875rem;
+            font-weight: 600;
         }
 
-        .chart-card h3::before {
-            content: '📊';
-            font-size: 1.3em;
-            animation: bounce 1s ease-in-out infinite;
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        .legend-dot.in-chart {
+            background: var(--primary);
+        }
+
+        .legend-dot.out-chart {
+            background: var(--error);
         }
 
         .chart-container {
             position: relative;
-            height: 450px;
-            z-index: 1;
+            height: 400px;
         }
 
-        /* 곡 추이 모달 */
+        /* ========== 테이블 ========== */
+        .table-card {
+            background: white;
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .table-scroll {
+            overflow-y: auto;
+            max-height: 600px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .summary-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .summary-table th {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            color: var(--gray-700);
+            font-weight: 700;
+            padding: var(--spacing-md);
+            text-align: left;
+            border-bottom: 2px solid var(--primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-table th:first-child {
+            width: 50px;
+            text-align: center;
+            border-radius: var(--radius-lg) 0 0 0;
+        }
+
+        .summary-table th:last-child {
+            border-radius: 0 var(--radius-lg) 0 0;
+        }
+
+        .summary-table th:nth-child(3) {
+            text-align: right;
+            width: 120px;
+        }
+
+        .summary-table th:last-child {
+            width: 140px;
+            text-align: center;
+        }
+
+        .summary-table td {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.9375rem;
+        }
+
+        .summary-table td:first-child {
+            text-align: center;
+            font-weight: 700;
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+
+        .summary-table td:nth-child(2) {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .summary-table td:nth-child(3) {
+            text-align: right;
+            font-weight: 700;
+            color: var(--gray-700);
+            font-family: 'Courier New', monospace;
+        }
+
+        .summary-table td:last-child {
+            text-align: center;
+        }
+
+        .summary-table tbody tr {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .summary-table tbody tr:hover {
+            background: var(--primary-light);
+        }
+
+        .summary-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .rank-badge.in-chart {
+            background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+            color: #065F46;
+            border: 1px solid #6EE7B7;
+        }
+
+        .rank-badge.out-chart {
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        /* ========== 데이터 입력 폼 ========== */
+        .data-form {
+            background: white;
+            border-radius: var(--radius-2xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            display: none;
+            margin-bottom: var(--spacing-lg);
+            border: 2px solid var(--primary-light);
+        }
+
+        .data-form.show { 
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .data-form .card-title {
+            color: var(--primary);
+        }
+
+        .input-guide {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #F0FDF4 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid var(--primary);
+        }
+
+        .input-guide p {
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .input-guide p:last-child {
+            margin-bottom: 0;
+        }
+
+        .song-input-grid {
+            display: grid;
+            grid-template-columns: 50px 1fr 120px 80px;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            align-items: center;
+        }
+
+        .song-input-header {
+            font-weight: 700;
+            color: var(--gray-700);
+            padding: var(--spacing-sm);
+            text-align: center;
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .song-input-grid input {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+        }
+
+        .song-input-grid input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 199, 60, 0.1);
+        }
+
+        .song-input-grid input[type="number"] {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .song-input-grid input[readonly] {
+            background: var(--gray-50);
+            color: var(--gray-500);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: var(--spacing-xl);
+            transition: all 0.3s;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-save:active {
+            transform: translateY(0);
+        }
+
+        /* ========== 곡 추이 모달 ========== */
         .trend-modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
             z-index: 2000;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: var(--spacing-lg);
         }
 
         .trend-modal.show { display: flex; }
 
         .trend-modal-content {
             background: white;
-            padding: 20px;
-            border-radius: 20px;
+            padding: var(--spacing-2xl);
+            border-radius: var(--radius-2xl);
             max-width: 95%;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s ease-out;
         }
 
         .trend-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--gray-100);
         }
 
         .trend-modal-header h2 {
-            color: #00C73C;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
         .btn-close-modal {
-            background: #eeeeee;
+            background: var(--gray-100);
             border: none;
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--gray-600);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2em;
-            color: #757575;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .btn-close-modal:hover {
-            background: #e0e0e0;
+            background: var(--gray-200);
             transform: rotate(90deg);
         }
 
         .trend-chart-container {
-            position: relative;
-            height: 300px;
-            margin-bottom: 15px;
+            height: 350px;
+            margin-bottom: var(--spacing-xl);
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
         }
 
         .trend-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
+            gap: var(--spacing-md);
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
-            padding: 12px;
-            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, white 100%);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
             text-align: center;
+            border: 1px solid var(--primary);
         }
 
         .stat-label {
-            font-size: 0.75em;
-            color: #757575;
-            margin-bottom: 5px;
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .stat-value {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #00C73C;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
         }
 
         .no-data {
             text-align: center;
-            padding: 40px 20px;
-            color: #9ca3af;
-        }
-
-        .no-data .icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        /* 입력 가이드 */
-        .input-guide {
-            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-        }
-
-        .input-guide p {
-            color: #424242;
-            font-size: 0.85em;
-            margin-bottom: 8px;
+            padding: var(--spacing-2xl);
+            color: var(--gray-400);
+            font-size: 1rem;
             font-weight: 600;
         }
 
-        /* PC 반응형 */
+        /* ========== 반응형 디자인 ========== */
         @media (min-width: 769px) {
             body {
-                padding: 20px;
+                padding: var(--spacing-xl);
             }
 
-            .header {
-                padding: 20px 25px;
-                margin-bottom: 20px;
+            .main-title {
+                font-size: 2.5rem;
             }
 
-            .header h1 {
-                font-size: 1.8em;
+            .sub-title {
+                font-size: 1.125rem;
             }
 
-            .melon-logo {
-                font-size: 0.8em;
+            .title-divider {
+                width: 120px;
             }
 
-            .admin-btn {
-                top: 30px;
-                right: 30px;
-                width: 55px;
-                height: 55px;
-            }
-
-            .admin-btn svg {
-                width: 28px;
-                height: 28px;
-            }
-
-            .main-content {
+            /* 상단: 달력 우측 배치 */
+            .top-section {
                 display: grid;
-                grid-template-columns: 400px 1fr;
-                gap: 20px;
-                align-items: start;
+                grid-template-columns: 1fr 400px;
+                gap: var(--spacing-xl);
             }
 
-            .calendar-card {
-                position: sticky;
-                top: 20px;
-                padding: 20px;
-            }
-
-            .day {
-                min-height: 40px;
-                max-height: 48px;
-                font-size: 0.9em;
-            }
-
-            .chart-card,
-            .data-form {
-                padding: 20px;
+            /* 하단: 차트 + 테이블 가로 배치 */
+            .bottom-section {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: var(--spacing-xl);
             }
 
             .chart-container {
-                height: 450px;
+                height: 500px;
             }
 
-        @media (min-width: 1400px) {
-            .main-content {
-                grid-template-columns: 500px 1fr;
+            .table-scroll {
+                max-height: 550px;
             }
-            
+
+            .trend-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .song-input-grid {
+                grid-template-columns: 60px 1fr 140px 90px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1800px;
+            }
+
+            .top-section {
+                grid-template-columns: 1fr 450px;
+            }
+
             .chart-container {
                 height: 550px;
             }
+
+            .table-scroll {
+                max-height: 600px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.5rem;
+            }
+
+            .sub-title {
+                font-size: 0.875rem;
+            }
+
+            .title-divider {
+                width: 60px;
+            }
+
+            .admin-btn {
+                width: 48px;
+                height: 48px;
+            }
+
+            .quick-links {
+                margin-top: var(--spacing-md);
+                padding-top: var(--spacing-md);
+            }
+
+            .quick-links-title {
+                font-size: 0.75rem;
+            }
+
+            .quick-links-container {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+
+            .quick-link-btn {
+                width: 100%;
+                justify-content: center;
+                padding: var(--spacing-sm) var(--spacing-md);
+                font-size: 0.8125rem;
+            }
+
+            .quick-link-icon {
+                font-size: 1.1rem;
+            }
+
+            .song-input-grid {
+                grid-template-columns: 40px 1fr 100px 70px;
+                gap: 4px;
+            }
+
+            .song-input-grid input {
+                padding: var(--spacing-xs) var(--spacing-sm);
+                font-size: 0.875rem;
+            }
+
+            .summary-table th,
+            .summary-table td {
+                padding: var(--spacing-sm);
+                font-size: 0.8125rem;
+            }
+
+            .rank-badge {
+                padding: 2px var(--spacing-sm);
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ========== 스크롤바 스타일 ========== */
+        .table-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: var(--radius-md);
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ========== 로딩 상태 ========== */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 헤더 -->
-        <div class="header">
-            <h1>
-                <span class="melon-logo">MELON</span>
-                일간 감상자수
-            </h1>
-        </div>
-
         <!-- 관리자 버튼 -->
         <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()">
             <svg viewBox="0 0 24 24">
@@ -732,9 +1177,37 @@
             </div>
         </div>
 
-        <!-- 메인 레이아웃 -->
-        <div class="main-content">
-            <!-- 왼쪽: 달력 -->
+        <!-- 상단: 헤더 + 달력 -->
+        <div class="top-section">
+            <div class="header">
+                <div class="header-title">
+                    <div class="main-title">WeStream Rank</div>
+                    <div class="title-divider"></div>
+                    <div class="sub-title">"우리의 스트리밍, 지금 어디까지 왔나"</div>
+                    
+                    <!-- 원클릭 링크 섹션 -->
+                    <div class="quick-links">
+                        <div class="quick-links-title">【멜론 원클릭】 2025.10.14ver [아날로그 볼륨.1]</div>
+                        <div class="quick-links-container">
+                            <a href="https://vo.la/TEIx4gn" target="_blank" class="quick-link-btn">
+                                <span class="quick-link-icon">🤖</span>
+                                <span class="quick-link-label">
+                                    <span>멜론 안드로이드</span>
+                                    <span class="quick-link-device">(삼성·엘지)</span>
+                                </span>
+                            </a>
+                            <a href="https://lrl.kr/WIYj" target="_blank" class="quick-link-btn">
+                                <span class="quick-link-icon">🍎</span>
+                                <span class="quick-link-label">
+                                    <span>멜론 아이폰</span>
+                                    <span class="quick-link-device">(iOS)</span>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="calendar-card">
                 <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
 
@@ -743,7 +1216,7 @@
                         <button class="nav-btn" onclick="changeYear(-1)">‹‹</button>
                         <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
                     </div>
-                    <div style="text-align: center;">
+                    <div class="calendar-title-group">
                         <div class="calendar-year" id="calendarYear">2025년</div>
                         <div class="calendar-month" id="calendarMonth">1월</div>
                     </div>
@@ -767,40 +1240,72 @@
                 
                 <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
             </div>
+        </div>
 
-            <!-- 오른쪽: 차트 & 테이블 -->
-            <div>
-                <!-- 데이터 입력 폼 -->
-                <div class="data-form" id="dataForm">
-                    <h3>✏️ 감상자수 데이터 입력</h3>
-                    <div class="input-guide">
-                        <p>💡 <strong>감상자수 확인 방법</strong></p>
-                        <p style="color: #757575; font-size: 0.85em; font-weight: normal;">
-                            PC 웹 또는 멜론 앱에서 곡을 검색하면 실시간 감상자수와 순위를 확인할 수 있습니다.
-                        </p>
+        <!-- 데이터 입력 폼 -->
+        <div class="data-form" id="dataForm">
+            <h3 class="card-title">✏️ 감상자수 데이터 입력</h3>
+            <div class="input-guide">
+                <p><strong>💡 감상자수 확인 방법</strong></p>
+                <p style="color: #6B7280; font-weight: normal;">
+                    PC 웹 또는 멜론 앱에서 곡을 검색하면 실시간 감상자수와 순위를 확인할 수 있습니다.
+                </p>
+            </div>
+            <div class="song-input-grid">
+                <div class="song-input-header">#</div>
+                <div class="song-input-header">곡명</div>
+                <div class="song-input-header">감상자수</div>
+                <div class="song-input-header">순위</div>
+            </div>
+            <div id="songInputs"></div>
+            <button class="btn-save" onclick="saveData()">💾 저장하기</button>
+        </div>
+
+        <!-- 하단: 차트 + 테이블 -->
+        <div class="bottom-section">
+            <!-- 왼쪽: 차트 -->
+            <div class="chart-card">
+                <h3 class="card-title">📊 일간 감상자수 & 멜론 순위</h3>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot in-chart"></span>
+                        <span>100위권 내</span>
                     </div>
-                    <div class="song-input-grid">
-                        <div class="song-input-header">순번</div>
-                        <div class="song-input-header">곡명</div>
-                        <div class="song-input-header">감상자수</div>
-                        <div class="song-input-header">순위</div>
+                    <div class="legend-item">
+                        <span class="legend-dot out-chart"></span>
+                        <span>100위권 밖</span>
                     </div>
-                    <div id="songInputs"></div>
-                    <button class="btn-save" onclick="saveData()">💾 저장하기</button>
                 </div>
-
-                <!-- 차트 - 강조! -->
-                <div class="chart-card">
-                    <h3>일간 감상자수 & 멜론 순위</h3>
-                    <p style="font-size: 0.75em; color: #757575; margin-bottom: 10px; margin-top: -10px;">
-                        🟢 초록: 100위권 내 | 🔴 빨강: 100위권 밖 (100위와 차이 표시)
-                    </p>
-                    <div class="chart-container">
-                        <canvas id="barChart"></canvas>
-                    </div>
+                <p class="chart-note">
+                    막대 그래프에 마우스를 올리면 상세 정보를 확인할 수 있습니다.
+                </p>
+                <div class="chart-container">
+                    <canvas id="barChart"></canvas>
                 </div>
+            </div>
 
-
+            <!-- 오른쪽: 테이블 -->
+            <div class="table-card">
+                <h3 class="card-title">📋 상세 데이터</h3>
+                <div class="table-scroll">
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>곡명</th>
+                                <th>감상자수</th>
+                                <th>순위 / 차이</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody">
+                            <tr>
+                                <td colspan="4" class="no-data">
+                                    📅 날짜를 선택하고 데이터를 불러오세요
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -831,9 +1336,10 @@
             "마음의 나이", "내 마음에 비친 내모습", "그날", "오십", "내 곁에 있어줘", "100위 곡()"
         ];
 
-        let database, isAdmin = false, barChart, trendChart, currentData = null;
+        let database, isAdmin = false, barChart, trendChart;
         let currentDate = new Date(), selectedDate = null;
 
+        // Firebase 초기화
         try {
             firebase.initializeApp(firebaseConfig);
             database = firebase.database();
@@ -845,9 +1351,9 @@
             });
         } catch (error) {
             document.getElementById('firebaseStatus').textContent = '❌ Firebase 연결 실패';
-            document.getElementById('firebaseStatus').classList.add('error');
         }
 
+        // 달력 렌더링
         function renderCalendar() {
             const year = currentDate.getFullYear(), month = currentDate.getMonth();
             document.getElementById('calendarYear').textContent = `${year}년`;
@@ -907,6 +1413,7 @@
             return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         }
 
+        // 관리자 로그인
         function toggleAdmin() {
             isAdmin ? logout() : (document.getElementById('loginModal').classList.add('show'), document.getElementById('passwordInput').focus());
         }
@@ -945,6 +1452,7 @@
             }
         }
 
+        // 데이터 입력
         function showDataForm() {
             const form = document.getElementById('dataForm');
             if (form.classList.contains('show')) {
@@ -1043,6 +1551,7 @@
             }
         }
 
+        // 데이터 로드 및 렌더링
         async function loadData() {
             if (!selectedDate || !database) return;
 
@@ -1052,31 +1561,46 @@
                 const data = snapshot.val();
 
                 if (!data || data.length === 0) {
+                    // 차트 초기화
                     const barCtx = document.getElementById('barChart').getContext('2d');
                     if (barChart) barChart.destroy();
                     barChart = new Chart(barCtx, {
                         type: 'bar',
-                        data: { labels: [], datasets: [{ label: '감상자수', data: [], backgroundColor: [] }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                        data: { labels: [], datasets: [] },
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
                     });
+                    
+                    // 테이블 초기화
+                    document.getElementById('summaryTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="4" class="no-data">
+                                🔍 ${dateKey}의 데이터가 없습니다
+                            </td>
+                        </tr>
+                    `;
                     return;
                 }
 
-                currentData = data;
-                renderCharts(data);
+                renderChartAndTable(data);
             } catch (error) {
                 console.error('데이터 로드 오류:', error);
             }
         }
 
-        function renderCharts(data) {
-            // 100위 기준 감상자수 계산 (100위 곡의 감상자수)
+        function renderChartAndTable(data) {
+            // 100위 기준 감상자수
             const rank100Song = data.find(item => item.chartRank === 100);
             const rank100Count = rank100Song ? rank100Song.count : 0;
 
+            // 차트 라벨 생성
             const labels = data.map(item => {
                 let label = item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name;
-                // 순위 정보 추가
                 if (item.chartRank) {
                     label += ` (${item.chartRank}위)`;
                 } else if (rank100Count > 0) {
@@ -1085,25 +1609,16 @@
                 }
                 return label;
             });
+
             const counts = data.map(item => item.count);
+            const colors = data.map(item => 
+                (item.chartRank && item.chartRank <= 100) ? 'rgba(0, 199, 60, 0.85)' : 'rgba(239, 68, 68, 0.85)'
+            );
+            const borderColors = data.map(item => 
+                (item.chartRank && item.chartRank <= 100) ? 'rgba(0, 199, 60, 1)' : 'rgba(239, 68, 68, 1)'
+            );
 
-            // 색상: 100위권 내면 초록, 밖이면 빨강
-            const colors = data.map(item => {
-                if (item.chartRank && item.chartRank <= 100) {
-                    return 'rgba(0, 199, 60, 0.8)';
-                } else {
-                    return 'rgba(239, 68, 68, 0.8)';
-                }
-            });
-
-            const borderColors = data.map(item => {
-                if (item.chartRank && item.chartRank <= 100) {
-                    return 'rgba(0, 199, 60, 1)';
-                } else {
-                    return 'rgba(239, 68, 68, 1)';
-                }
-            });
-
+            // 차트 렌더링
             const barCtx = document.getElementById('barChart').getContext('2d');
             if (barChart) barChart.destroy();
             
@@ -1116,7 +1631,8 @@
                         data: counts,
                         backgroundColor: colors,
                         borderColor: borderColors,
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -1125,6 +1641,12 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                            padding: 12,
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
                             callbacks: {
                                 label: function(context) {
                                     const item = data[context.dataIndex];
@@ -1145,29 +1667,61 @@
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
                             ticks: {
+                                font: { size: 12 },
                                 callback: function(value) {
                                     return value.toLocaleString();
                                 }
                             }
                         },
                         x: {
+                            grid: {
+                                display: false
+                            },
                             ticks: {
                                 maxRotation: 45,
                                 minRotation: 45,
-                                font: {
-                                    size: 9
-                                }
+                                font: { size: 10 }
                             }
                         }
                     }
                 }
             });
+
+            // 테이블 렌더링
+            let html = '';
+            data.forEach((item, index) => {
+                let statusHtml = '';
+                
+                if (item.chartRank) {
+                    statusHtml = `<span class="rank-badge in-chart">🏆 ${item.chartRank}위</span>`;
+                } else if (rank100Count > 0) {
+                    const gap = rank100Count - item.count;
+                    statusHtml = `<span class="rank-badge out-chart">📉 -${gap.toLocaleString()}</span>`;
+                } else {
+                    statusHtml = `<span style="color: #9CA3AF; font-weight: 600;">순위 외</span>`;
+                }
+
+                html += `
+                    <tr onclick="showSongTrend('${item.name.replace(/'/g, "\\'")}')">
+                        <td>${index + 1}</td>
+                        <td><strong>${item.name}</strong></td>
+                        <td>${item.count.toLocaleString()}</td>
+                        <td>${statusHtml}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('summaryTableBody').innerHTML = html;
         }
 
+        // 곡 추이 분석
         async function showSongTrend(songName) {
             try {
-                document.getElementById('trendSongName').innerHTML = `📈 ${songName} - 날짜별 추이`;
+                document.getElementById('trendSongName').innerHTML = `📈 ${songName}`;
                 document.getElementById('trendModal').classList.add('show');
 
                 const snapshot = await database.ref('melon_chart').once('value');
@@ -1201,15 +1755,14 @@
                 const latestCount = counts[counts.length - 1];
                 const firstCount = counts[0];
                 const totalChange = latestCount - firstCount;
-                const changePercent = firstCount > 0 ? ((totalChange / firstCount) * 100).toFixed(1) : 0;
 
                 let statsHtml = `
                     <div class="stat-card">
-                        <div class="stat-label">최고</div>
+                        <div class="stat-label">최고 기록</div>
                         <div class="stat-value">${maxCount.toLocaleString()}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">최저</div>
+                        <div class="stat-label">최저 기록</div>
                         <div class="stat-value">${minCount.toLocaleString()}</div>
                     </div>
                     <div class="stat-card">
@@ -1218,7 +1771,7 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">총 변화</div>
-                        <div class="stat-value" style="color: ${totalChange >= 0 ? '#ef4444' : '#3b82f6'}">
+                        <div class="stat-value" style="color: ${totalChange >= 0 ? '#EF4444' : '#3B82F6'}">
                             ${totalChange >= 0 ? '▲' : '▼'} ${Math.abs(totalChange).toLocaleString()}
                         </div>
                     </div>
@@ -1242,12 +1795,12 @@
                             data: counts,
                             borderColor: 'rgba(0, 199, 60, 1)',
                             backgroundColor: 'rgba(0, 199, 60, 0.1)',
-                            tension: 0.3,
+                            tension: 0.4,
                             borderWidth: 3,
                             pointRadius: 6,
                             pointBackgroundColor: 'rgba(0, 199, 60, 1)',
                             pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
+                            pointBorderWidth: 3,
                             pointHoverRadius: 8,
                             fill: true
                         }]
@@ -1258,6 +1811,10 @@
                         plugins: {
                             legend: { display: false },
                             tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                                padding: 12,
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 13 },
                                 callbacks: {
                                     label: function(context) {
                                         return '감상자수: ' + context.parsed.y.toLocaleString();
@@ -1271,16 +1828,22 @@
                         scales: {
                             y: {
                                 beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
                                 ticks: {
+                                    font: { size: 12 },
                                     callback: function(value) {
                                         return value.toLocaleString();
                                     }
                                 }
                             },
                             x: {
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
                                 ticks: {
-                                    maxRotation: 45,
-                                    minRotation: 45
+                                    font: { size: 11 }
                                 }
                             }
                         }
@@ -1293,6 +1856,7 @@
             }
         }
 
+        // 초기 렌더링
         window.addEventListener('DOMContentLoaded', function() {
             renderCalendar();
         });
