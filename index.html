@@ -71,7 +71,7 @@
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
         }
 
@@ -79,7 +79,7 @@
         .header {
             background: white;
             border-radius: var(--radius-2xl);
-            padding: var(--spacing-xl) var(--spacing-lg);
+            padding: var(--spacing-2xl) var(--spacing-xl);
             box-shadow: var(--shadow-lg);
             margin-bottom: var(--spacing-lg);
             border: 3px solid var(--primary);
@@ -120,8 +120,13 @@
             flex: 1;
         }
 
+        .header .calendar-section {
+            width: 100%;
+            max-width: 400px;
+        }
+
         .main-title {
-            font-size: 1.75rem;
+            font-size: 2.25rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--secondary) 100%);
             -webkit-background-clip: text;
@@ -131,15 +136,15 @@
         }
 
         .title-divider {
-            width: 80px;
+            width: 100px;
             height: 4px;
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            margin: var(--spacing-sm) auto;
+            margin: var(--spacing-sm) 0;
             border-radius: 2px;
         }
 
         .sub-title {
-            font-size: 1rem;
+            font-size: 1.125rem;
             color: var(--gray-600);
             font-weight: 600;
             letter-spacing: 0.01em;
@@ -462,7 +467,7 @@
         .calendar-card {
             background: white;
             border-radius: var(--radius-2xl);
-            padding: var(--spacing-xl);
+            padding: var(--spacing-lg);
             box-shadow: var(--shadow);
             border: 1px solid var(--gray-200);
         }
@@ -730,7 +735,7 @@
 
         .table-scroll {
             overflow-y: auto;
-            max-height: 600px;
+            max-height: 70vh;
             border-radius: var(--radius-lg);
             border: 1px solid var(--gray-200);
         }
@@ -760,7 +765,7 @@
         }
 
         .summary-table th:first-child {
-            width: 50px;
+            width: 40px;
             text-align: center;
             border-radius: var(--radius-lg) 0 0 0;
         }
@@ -769,13 +774,17 @@
             border-radius: 0 var(--radius-lg) 0 0;
         }
 
+        .summary-table th:nth-child(2) {
+            min-width: 150px;
+        }
+
         .summary-table th:nth-child(3) {
             text-align: right;
-            width: 120px;
+            width: 90px;
         }
 
         .summary-table th:last-child {
-            width: 140px;
+            width: 110px;
             text-align: center;
         }
 
@@ -783,6 +792,7 @@
             padding: var(--spacing-md);
             border-bottom: 1px solid var(--gray-100);
             font-size: 0.9375rem;
+            line-height: 1.4;
         }
 
         .summary-table td:first-child {
@@ -795,6 +805,8 @@
         .summary-table td:nth-child(2) {
             font-weight: 600;
             color: var(--gray-800);
+            word-break: keep-all;
+            line-height: 1.3;
         }
 
         .summary-table td:nth-child(3) {
@@ -802,6 +814,7 @@
             font-weight: 700;
             color: var(--gray-700);
             font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
         }
 
         .summary-table td:last-child {
@@ -1132,31 +1145,38 @@
             }
 
             .main-title {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
 
             .sub-title {
-                font-size: 1.125rem;
+                font-size: 1.25rem;
             }
 
             .title-divider {
-                width: 120px;
+                width: 140px;
             }
 
-            /* 헤더 가로 배치 */
+            /* 헤더 가로 배치 - 타이틀 | 달력 | QR */
             .header-content {
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
+                gap: var(--spacing-2xl);
             }
 
             .header-title {
                 align-items: flex-start;
                 text-align: left;
+                flex: 0 0 auto;
             }
 
             .title-divider {
                 margin-left: 0;
+            }
+
+            .header .calendar-section {
+                flex: 0 0 auto;
+                max-width: 380px;
             }
 
             .quick-links {
@@ -1172,23 +1192,18 @@
                 gap: var(--spacing-md);
             }
 
-            /* PC 레이아웃: 달력 우측, 차트+테이블 아래 */
+            /* PC 레이아웃: 차트와 테이블을 전체 너비로 */
             .content-wrapper {
-                display: grid;
-                grid-template-columns: 1fr 380px;
+                display: flex;
+                flex-direction: column;
                 gap: var(--spacing-xl);
-                align-items: start;
             }
 
             .main-content {
                 display: flex;
                 flex-direction: column;
                 gap: var(--spacing-xl);
-            }
-
-            .calendar-section {
-                position: sticky;
-                top: var(--spacing-lg);
+                width: 100%;
             }
 
             .charts-section {
@@ -1199,15 +1214,15 @@
 
             .chart-card,
             .table-card {
-                min-height: 650px;
+                min-height: 700px;
             }
 
             .chart-container {
-                height: 500px;
+                height: 550px;
             }
 
             .table-scroll {
-                max-height: 550px;
+                max-height: 600px;
             }
 
             .trend-stats {
@@ -1221,19 +1236,19 @@
 
         @media (min-width: 1400px) {
             .container {
-                max-width: 1800px;
-            }
-
-            .content-wrapper {
-                grid-template-columns: 1fr 420px;
+                max-width: 2000px;
             }
 
             .chart-container {
-                height: 550px;
+                height: 600px;
             }
 
             .table-scroll {
-                max-height: 600px;
+                max-height: 650px;
+            }
+
+            .header .calendar-section {
+                max-width: 400px;
             }
         }
 
@@ -1272,6 +1287,15 @@
                 height: 75px;
             }
 
+            .table-card {
+                padding: var(--spacing-md);
+            }
+
+            .table-card .card-title {
+                font-size: 1rem;
+                margin-bottom: var(--spacing-md);
+            }
+
             .song-input-grid {
                 grid-template-columns: 40px 1fr 100px 70px;
                 gap: 4px;
@@ -1284,13 +1308,40 @@
 
             .summary-table th,
             .summary-table td {
-                padding: var(--spacing-sm);
+                padding: 8px 6px;
                 font-size: 0.8125rem;
+                line-height: 1.3;
+            }
+
+            .summary-table td:nth-child(2) {
+                line-height: 1.25;
+            }
+
+            .summary-table th:first-child,
+            .summary-table td:first-child {
+                width: 35px;
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+
+            .summary-table th:nth-child(3),
+            .summary-table td:nth-child(3) {
+                width: 75px;
+                font-size: 0.75rem;
+                padding: 8px 4px;
+            }
+
+            .summary-table th:last-child,
+            .summary-table td:last-child {
+                width: 95px;
+                font-size: 0.75rem;
+                padding: 8px 4px;
             }
 
             .rank-badge {
-                padding: 2px var(--spacing-sm);
-                font-size: 0.75rem;
+                padding: 2px 6px;
+                font-size: 0.65rem;
+                white-space: nowrap;
             }
         }
 
@@ -1367,8 +1418,44 @@
                     <div class="title-divider"></div>
                     <div class="sub-title">"우리의 스트리밍, 지금 어디까지 왔나"</div>
                 </div>
+
+                <!-- 달력 섹션 (중앙) -->
+                <div class="calendar-section">
+                    <div class="calendar-card">
+                        <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
+
+                        <div class="calendar-header">
+                            <div class="calendar-nav">
+                                <button class="nav-btn" onclick="changeYear(-1)">‹‹</button>
+                                <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                            </div>
+                            <div class="calendar-title-group">
+                                <div class="calendar-year" id="calendarYear">2025년</div>
+                                <div class="calendar-month" id="calendarMonth">1월</div>
+                            </div>
+                            <div class="calendar-nav">
+                                <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                                <button class="nav-btn" onclick="changeYear(1)">››</button>
+                            </div>
+                        </div>
+
+                        <div class="weekdays">
+                            <div class="weekday">일</div>
+                            <div class="weekday">월</div>
+                            <div class="weekday">화</div>
+                            <div class="weekday">수</div>
+                            <div class="weekday">목</div>
+                            <div class="weekday">금</div>
+                            <div class="weekday">토</div>
+                        </div>
+
+                        <div class="calendar-days" id="calendarDays"></div>
+                        
+                        <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
+                    </div>
+                </div>
                 
-                <!-- 원클릭 링크 섹션 (QR 코드 포함) -->
+                <!-- 원클릭 링크 섹션 (우측) -->
                 <div class="quick-links">
                     <div class="quick-links-title">【멜론 원클릭】 2025.10.14ver [아날로그 볼륨.1]</div>
                     <div class="quick-links-container">
@@ -1408,7 +1495,7 @@
 
         <!-- 콘텐츠 영역 -->
         <div class="content-wrapper">
-            <!-- 메인 콘텐츠 (왼쪽) -->
+            <!-- 메인 콘텐츠 -->
             <div class="main-content">
                 <!-- 데이터 입력 폼 -->
                 <div class="data-form" id="dataForm">
@@ -1490,42 +1577,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- 달력 (우측) -->
-            <div class="calendar-section">
-                <div class="calendar-card">
-                    <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
-
-                    <div class="calendar-header">
-                        <div class="calendar-nav">
-                            <button class="nav-btn" onclick="changeYear(-1)">‹‹</button>
-                            <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-                        </div>
-                        <div class="calendar-title-group">
-                            <div class="calendar-year" id="calendarYear">2025년</div>
-                            <div class="calendar-month" id="calendarMonth">1월</div>
-                        </div>
-                        <div class="calendar-nav">
-                            <button class="nav-btn" onclick="changeMonth(1)">›</button>
-                            <button class="nav-btn" onclick="changeYear(1)">››</button>
-                        </div>
-                    </div>
-
-                    <div class="weekdays">
-                        <div class="weekday">일</div>
-                        <div class="weekday">월</div>
-                        <div class="weekday">화</div>
-                        <div class="weekday">수</div>
-                        <div class="weekday">목</div>
-                        <div class="weekday">금</div>
-                        <div class="weekday">토</div>
-                    </div>
-
-                    <div class="calendar-days" id="calendarDays"></div>
-                    
-                    <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
                 </div>
             </div>
         </div>
