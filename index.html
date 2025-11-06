@@ -3,695 +3,1505 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANNA - 자동저장</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-</head>
-<body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-        
-        function MannaTracker() {
-            const [allData, setAllData] = useState({});
-            const [currentDate, setCurrentDate] = useState('');
-            const [currentText, setCurrentText] = useState('');
-            const [currentMemo, setCurrentMemo] = useState('');
-            const [copied, setCopied] = useState(false);
-            const [viewMonth, setViewMonth] = useState('');
-            const [lastSaved, setLastSaved] = useState(null);
-            const [shareUrl, setShareUrl] = useState('');
-            const [qrDataUrl, setQrDataUrl] = useState('');
-            const [showShareModal, setShowShareModal] = useState(false);
-            const [showMigrationAlert, setShowMigrationAlert] = useState(false);
-
-            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
-            const STORAGE_KEY = 'manna_data_v2';
-
-            // 초기 로드: 데이터 마이그레이션 + URL 공유 확인
-            useEffect(() => {
-                // Step 1: 다른 파일에서 온 데이터 마이그레이션 (localStorage의 모든 키 확인)
-                migrateDataFromOtherFiles();
-
-                // Step 2: URL 공유 데이터 확인
-                const urlParams = new URLSearchParams(window.location.search);
-                const shareParam = urlParams.get('share');
-                
-                if (shareParam) {
-                    try {
-                        console.log('공유 데이터 로드 시도...');
-                        const decoded = JSON.parse(decodeURIComponent(atob(shareParam)));
-                        setAllData(decoded.allData || {});
-                        setLastSaved(new Date());
-                        
-                        // URL에서 파라미터 제거
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        
-                        alert('공유 데이터를 성공적으로 불러왔습니다!');
-                    } catch (err) {
-                        console.error('공유 데이터 로드 실패:', err);
-                        loadFromLocalStorage();
-                    }
-                } else {
-                    loadFromLocalStorage();
-                }
-
-                const today = new Date();
-                const todayStr = formatDate(today);
-                setCurrentDate(todayStr);
-                setViewMonth(todayStr.substring(0, 7));
-            }, []);
-
-            // 다른 파일에서 온 데이터 마이그레이션
-            function migrateDataFromOtherFiles() {
-                const currentData = localStorage.getItem(STORAGE_KEY);
-                
-                // 이미 현재 저장소에 데이터가 있으면 마이그레이션 불필요
-                if (currentData) {
-                    return;
-                }
-
-                // 다른 버전의 storage key 확인 (이전 파일들에서 저장된 데이터)
-                const possibleKeys = [
-                    'manna_data_v1',
-                    'manna_data',
-                    'manna_tracker_data'
-                ];
-
-                for (let key of possibleKeys) {
-                    const oldData = localStorage.getItem(key);
-                    if (oldData) {
-                        try {
-                            const parsed = JSON.parse(oldData);
-                            localStorage.setItem(STORAGE_KEY, oldData);
-                            console.log(`데이터 마이그레이션 완료: ${key} → ${STORAGE_KEY}`);
-                            setShowMigrationAlert(true);
-                            return;
-                        } catch (e) {
-                            console.error(`마이그레이션 실패 (${key}):`, e);
-                        }
-                    }
-                }
-            }
-
-            function loadFromLocalStorage() {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    try {
-                        const parsed = JSON.parse(saved);
-                        setAllData(parsed.allData || {});
-                        setLastSaved(new Date(parsed.lastSaved));
-                    } catch (e) {
-                        console.error('데이터 로드 실패:', e);
-                    }
-                }
-            }
-
-            // 데이터 변경시 자동 저장
-            useEffect(() => {
-                if (Object.keys(allData).length > 0) {
-                    saveToLocalStorage();
-                }
-            }, [allData]);
-
-            useEffect(() => {
-                if (currentDate) {
-                    loadDate(currentDate);
-                }
-            }, [currentDate]);
-
-            function saveToLocalStorage() {
-                const dataToSave = {
-                    allData: allData,
-                    lastSaved: new Date().toISOString()
-                };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-                setLastSaved(new Date());
-            }
-
-            function formatDate(date) {
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            }
-
-            function getDayOfWeek(dateStr) {
-                if (!dateStr) return '';
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const date = new Date(year, month - 1, day);
-                return dayNames[date.getDay()];
-            }
-
-            function getWeekNumber(dateStr) {
-                const [year, month, day] = dateStr.split('-').map(Number);
-                const date = new Date(year, month - 1, day);
-                const firstDay = new Date(year, 0, 1);
-                const pastDays = (date - firstDay) / 86400000;
-                return Math.ceil((pastDays + firstDay.getDay() + 1) / 7);
-            }
-
-            function loadDate(dateStr) {
-                if (allData[dateStr]) {
-                    setCurrentText(allData[dateStr].text || '');
-                    setCurrentMemo(allData[dateStr].memo || '');
-                } else {
-                    setCurrentText('');
-                    setCurrentMemo('');
-                }
-            }
-
-            function saveCurrentDate() {
-                if (currentDate && (currentText || currentMemo)) {
-                    setAllData(prev => ({
-                        ...prev,
-                        [currentDate]: {
-                            text: currentText,
-                            memo: currentMemo,
-                            dayOfWeek: getDayOfWeek(currentDate),
-                            weekNumber: getWeekNumber(currentDate)
-                        }
-                    }));
-                }
-            }
-
-            function handleDateChange(newDate) {
-                saveCurrentDate();
-                setCurrentDate(newDate);
-                setViewMonth(newDate.substring(0, 7));
-            }
-
-            function goToToday() {
-                const today = new Date();
-                handleDateChange(formatDate(today));
-            }
-
-            function changeDay(offset) {
-                if (!currentDate) {
-                    goToToday();
-                    return;
-                }
-                const [year, month, day] = currentDate.split('-').map(Number);
-                const date = new Date(year, month - 1, day);
-                date.setDate(date.getDate() + offset);
-                handleDateChange(formatDate(date));
-            }
-
-            function changeMonth(offset) {
-                const [year, month] = viewMonth.split('-').map(Number);
-                const newDate = new Date(year, month - 1 + offset, 1);
-                setViewMonth(formatDate(newDate).substring(0, 7));
-            }
-
-            function getMonthCalendar(yearMonth) {
-                const [year, month] = yearMonth.split('-').map(Number);
-                const firstDay = new Date(year, month - 1, 1);
-                const lastDay = new Date(year, month, 0).getDate();
-                const startDayOfWeek = firstDay.getDay();
-                
-                const calendar = [];
-                
-                for (let i = 0; i < startDayOfWeek; i++) {
-                    calendar.push({ empty: true, key: `empty-${i}` });
-                }
-                
-                for (let day = 1; day <= lastDay; day++) {
-                    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    calendar.push({
-                        empty: false,
-                        date: dateStr,
-                        day: day,
-                        hasData: !!allData[dateStr],
-                        key: dateStr
-                    });
-                }
-                
-                return calendar;
-            }
-
-            function exportAllData() {
-                saveCurrentDate();
-                const data = {
-                    allData: allData,
-                    exportDate: new Date().toISOString()
-                };
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const timestamp = new Date().toISOString().slice(0, 10);
-                a.download = `MANNA_백업_${timestamp}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-            }
-
-            function exportCombinedText() {
-                saveCurrentDate();
-                let combinedText = `MANNA 전체 녹취\n\n`;
-                
-                const sortedDates = Object.keys(allData).sort();
-                let currentYear = null;
-                let currentWeek = null;
-
-                sortedDates.forEach(date => {
-                    const entry = allData[date];
-                    if (!entry.text) return;
-                    
-                    const [year, month, day] = date.split('-');
-                    const weekNum = entry.weekNumber;
-                    
-                    if (currentYear !== year) {
-                        currentYear = year;
-                        combinedText += `\n${'='.repeat(60)}\n${year}년\n${'='.repeat(60)}\n\n`;
-                    }
-                    
-                    if (currentWeek !== weekNum) {
-                        currentWeek = weekNum;
-                        combinedText += `\n[ ${weekNum}주차 ]\n\n`;
-                    }
-                    
-                    combinedText += `【${entry.dayOfWeek}요일 ${month}/${day}】\n${entry.text}\n\n`;
-                });
-
-                const blob = new Blob([combinedText], { type: 'text/plain;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const timestamp = new Date().toISOString().slice(0, 10);
-                a.download = `MANNA_전체녹취_${timestamp}.txt`;
-                a.click();
-                URL.revokeObjectURL(url);
-            }
-
-            function importData(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        try {
-                            const data = JSON.parse(e.target.result);
-                            const importedData = data.allData || {};
-                            
-                            // 기존 데이터와 병합 (덮어쓰기 확인)
-                            if (Object.keys(allData).length > 0) {
-                                if (!confirm('기존 데이터와 병합하시겠습니까? (취소하면 기존 데이터가 삭제됩니다)')) {
-                                    setAllData(importedData);
-                                } else {
-                                    setAllData(prev => ({ ...prev, ...importedData }));
-                                }
-                            } else {
-                                setAllData(importedData);
-                            }
-                            
-                            if (currentDate && importedData[currentDate]) {
-                                loadDate(currentDate);
-                            }
-                            alert('데이터를 성공적으로 불러왔습니다!');
-                        } catch (error) {
-                            alert('파일을 불러오는데 실패했습니다.');
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-                event.target.value = '';
-            }
-
-            async function generateShareUrl() {
-                saveCurrentDate();
-                const data = {
-                    allData: allData,
-                    exportDate: new Date().toISOString()
-                };
-                
-                try {
-                    // 데이터 크기 체크
-                    const dataStr = JSON.stringify(data);
-                    if (dataStr.length > 50000) {
-                        // 데이터가 너무 크면 파일 다운로드 방식 권장
-                        if (confirm('데이터가 많아서 링크/QR 방식이 불안정할 수 있습니다.\n대신 백업 파일을 만들어서 공유하시겠습니까?')) {
-                            exportAllData();
-                            return;
-                        }
-                    }
-                    
-                    // 쿼리 파라미터 방식 사용 (해시 대신)
-                    const compressed = btoa(encodeURIComponent(dataStr));
-                    const url = `${window.location.origin}${window.location.pathname}?share=${compressed}`;
-                    setShareUrl(url);
-                    
-                    // QR 코드 생성
-                    try {
-                        const qr = new QRious({
-                            value: url,
-                            size: 256,
-                            level: 'M'
-                        });
-                        setQrDataUrl(qr.toDataURL());
-                    } catch (qrErr) {
-                        console.error('QR 생성 실패:', qrErr);
-                        setQrDataUrl('');
-                    }
-                    
-                    setShowShareModal(true);
-                } catch (err) {
-                    alert('URL 생성에 실패했습니다. 백업 파일 방식을 사용해주세요.');
-                    exportAllData();
-                }
-            }
-
-            async function copyShareUrl() {
-                try {
-                    await navigator.clipboard.writeText(shareUrl);
-                    alert('링크가 클립보드에 복사되었습니다!');
-                } catch (err) {
-                    alert('클립보드 복사에 실패했습니다.');
-                }
-            }
-
-            async function copyToClipboard() {
-                saveCurrentDate();
-                const data = {
-                    allData: allData,
-                    exportDate: new Date().toISOString()
-                };
-                try {
-                    await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                } catch (err) {
-                    alert('클립보드 복사에 실패했습니다.');
-                }
-            }
-
-            const totalEntries = Object.keys(allData).length;
-            const monthCalendar = viewMonth ? getMonthCalendar(viewMonth) : [];
-            const monthStats = {
-                written: monthCalendar.filter(d => !d.empty && d.hasData).length
-            };
-            const dayOfWeek = getDayOfWeek(currentDate);
-            const weekNum = currentDate ? getWeekNumber(currentDate) : null;
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {/* Left Column */}
-                            <div className="lg:col-span-2 space-y-6">
-                                {/* Header */}
-                                <div className="bg-white rounded-lg shadow-lg p-6">
-                                    <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="text-4xl">🍞</div>
-                                            <div>
-                                                <h1 className="text-3xl font-bold text-amber-800">MANNA</h1>
-                                                <p className="text-sm text-gray-600">
-                                                    총 {totalEntries}일 기록
-                                                    {lastSaved && (
-                                                        <span className="ml-2 text-green-600">
-                                                            ✓ 자동저장됨
-                                                        </span>
-                                                    )}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2 flex-wrap">
-                                            <button 
-                                                onClick={generateShareUrl} 
-                                                title="디바이스 간 공유 링크 생성" 
-                                                className="px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm font-semibold"
-                                            >
-                                                🔗 공유
-                                            </button>
-                                            <button 
-                                                onClick={copyToClipboard} 
-                                                title="JSON 데이터 복사" 
-                                                className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
-                                            >
-                                                {copied ? '✓' : '📋'}
-                                            </button>
-                                            <button 
-                                                onClick={exportAllData} 
-                                                title="백업 파일 저장" 
-                                                className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                                            >
-                                                💾
-                                            </button>
-                                            <button 
-                                                onClick={exportCombinedText} 
-                                                title="텍스트로 내보내기" 
-                                                className="px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm"
-                                            >
-                                                📄
-                                            </button>
-                                            <label 
-                                                title="백업 파일 불러오기" 
-                                                className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors cursor-pointer text-sm"
-                                            >
-                                                📂
-                                                <input type="file" accept=".json" onChange={importData} className="hidden" />
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Date Input */}
-                                    <div className="flex gap-3 items-center mb-4">
-                                        <button onClick={() => changeDay(-1)} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 font-bold">
-                                            ◀
-                                        </button>
-                                        <input
-                                            type="date"
-                                            value={currentDate}
-                                            onChange={(e) => handleDateChange(e.target.value)}
-                                            className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-amber-500 focus:outline-none text-lg font-semibold"
-                                        />
-                                        <button onClick={goToToday} className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600">
-                                            오늘
-                                        </button>
-                                        <button onClick={() => changeDay(1)} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 font-bold">
-                                            ▶
-                                        </button>
-                                    </div>
-
-                                    {currentDate && (
-                                        <div className="text-center mb-2">
-                                            <span className="text-2xl font-bold text-gray-800">{dayOfWeek}요일</span>
-                                            {weekNum && <span className="text-gray-500 ml-3">({weekNum}주차)</span>}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Main Input */}
-                                {currentDate && (
-                                    <div className="bg-white rounded-lg shadow-md p-5">
-                                        <div className="mb-3">
-                                            <h3 className="text-xl font-semibold text-gray-800">
-                                                {currentDate} ({dayOfWeek}요일)
-                                            </h3>
-                                        </div>
-                                        <textarea
-                                            value={currentText}
-                                            onChange={(e) => setCurrentText(e.target.value)}
-                                            placeholder="오늘의 녹취 내용을 입력하세요... (자동 저장됩니다)"
-                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-amber-500 focus:outline-none resize-none"
-                                            rows={10}
-                                            onBlur={saveCurrentDate}
-                                        />
-                                        {currentText && (
-                                            <div className="mt-2 text-sm text-gray-600">{currentText.length}자</div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Right Column */}
-                            <div className="space-y-6">
-                                {/* Calendar */}
-                                <div className="bg-white rounded-lg shadow-lg p-5">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <button onClick={() => changeMonth(-1)} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
-                                            ◀
-                                        </button>
-                                        <h3 className="text-lg font-bold text-gray-800">
-                                            {viewMonth && viewMonth.replace('-', '년 ')}월
-                                        </h3>
-                                        <button onClick={() => changeMonth(1)} className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">
-                                            ▶
-                                        </button>
-                                    </div>
-
-                                    <div className="mb-4 p-3 bg-amber-50 rounded-lg text-center">
-                                        <div className="text-lg">
-                                            <span className="text-green-600 font-bold text-2xl">{monthStats.written}</span>
-                                            <span className="text-gray-600 ml-2">일 작성</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-7 gap-1 mb-2">
-                                        <div className="text-center text-xs font-semibold text-red-500 py-1">일</div>
-                                        <div className="text-center text-xs font-semibold text-gray-600 py-1">월</div>
-                                        <div className="text-center text-xs font-semibold text-gray-600 py-1">화</div>
-                                        <div className="text-center text-xs font-semibold text-gray-600 py-1">수</div>
-                                        <div className="text-center text-xs font-semibold text-gray-600 py-1">목</div>
-                                        <div className="text-center text-xs font-semibold text-gray-600 py-1">금</div>
-                                        <div className="text-center text-xs font-semibold text-blue-600 py-1">토</div>
-                                    </div>
-
-                                    <div className="grid grid-cols-7 gap-1">
-                                        {monthCalendar.map((item) => 
-                                            item.empty ? (
-                                                <div key={item.key} className="p-2"></div>
-                                            ) : (
-                                                <button
-                                                    key={item.key}
-                                                    onClick={() => handleDateChange(item.date)}
-                                                    className={`p-2 rounded-lg text-center transition-all ${
-                                                        item.date === currentDate
-                                                            ? 'bg-amber-500 text-white font-bold ring-2 ring-amber-600'
-                                                            : item.hasData
-                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                            : 'bg-red-50 text-red-500 hover:bg-red-100'
-                                                    }`}
-                                                >
-                                                    <div className="font-bold">{item.day}</div>
-                                                </button>
-                                            )
-                                        )}
-                                    </div>
-
-                                    <div className="mt-4 text-xs space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 bg-green-100 rounded"></div>
-                                            <span>작성 완료</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 bg-red-50 rounded"></div>
-                                            <span>미작성</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Memo */}
-                                <div className="bg-white rounded-lg shadow-md p-5">
-                                    <h3 className="font-semibold text-gray-800 mb-3">📝 간단 메모</h3>
-                                    {currentDate ? (
-                                        <div>
-                                            <div className="text-sm text-gray-600 mb-2">
-                                                {currentDate} ({dayOfWeek}요일)
-                                            </div>
-                                            <textarea
-                                                value={currentMemo}
-                                                onChange={(e) => setCurrentMemo(e.target.value)}
-                                                onBlur={saveCurrentDate}
-                                                placeholder="오늘의 간단한 메모를 입력하세요..."
-                                                className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-amber-500 focus:outline-none resize-none text-sm"
-                                                rows={4}
-                                            />
-                                            {currentMemo && (
-                                                <div className="mt-1 text-xs text-gray-500">{currentMemo.length}자</div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div className="text-sm text-gray-500 text-center py-4">
-                                            날짜를 선택하면 메모를 작성할 수 있습니다
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Migration Alert */}
-                    {showMigrationAlert && (
-                        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg max-w-sm">
-                            <div className="font-semibold mb-1">✓ 데이터 마이그레이션 완료!</div>
-                            <div className="text-sm">이전 파일의 데이터가 자동으로 복구되었습니다.</div>
-                            <button 
-                                onClick={() => setShowMigrationAlert(false)}
-                                className="absolute top-2 right-2 text-lg cursor-pointer"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Share Modal */}
-                    {showShareModal && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                                <h2 className="text-2xl font-bold mb-4 text-amber-800">🔗 데이터 공유</h2>
-                                
-                                {qrDataUrl ? (
-                                    <div className="mb-6">
-                                        <h3 className="text-lg font-semibold mb-3">📱 QR 코드로 공유</h3>
-                                        <div className="flex flex-col items-center bg-gray-50 p-4 rounded-lg">
-                                            <img src={qrDataUrl} alt="QR Code" className="mb-3" />
-                                            <p className="text-sm text-gray-600 text-center">
-                                                다른 디바이스에서 이 QR 코드를 스캔하세요<br/>
-                                                <span className="text-xs text-green-600">✓ 카톡/텔레그램에서도 작동합니다!</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                ) : null}
-                                
-                                <div className="mb-6">
-                                    <h3 className="text-lg font-semibold mb-3">🔗 링크로 공유</h3>
-                                    <p className="text-gray-600 mb-3 text-sm">
-                                        이 링크를 카톡, 메일, 텔레그램 등으로 자신에게 보내서 다른 디바이스에서 열어보세요.
-                                    </p>
-                                    <div className="bg-gray-100 p-3 rounded-lg mb-3 break-all text-xs max-h-20 overflow-y-auto">
-                                        {shareUrl}
-                                    </div>
-                                    <button
-                                        onClick={copyShareUrl}
-                                        className="w-full px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 mb-3"
-                                    >
-                                        📋 링크 복사
-                                    </button>
-                                </div>
-                                
-                                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                                    <h3 className="text-lg font-semibold mb-2 text-blue-800">💡 더 안정적인 방법 (추천)</h3>
-                                    <p className="text-sm text-blue-700 mb-3">
-                                        데이터가 많을 때는 파일 방식이 더 안정적입니다:
-                                    </p>
-                                    <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
-                                        <li><strong>💾 백업</strong> 버튼으로 파일 저장</li>
-                                        <li>구글 드라이브/원드라이브/카톡 등으로 파일 전송</li>
-                                        <li>다른 디바이스에서 <strong>📂</strong> 버튼으로 파일 불러오기</li>
-                                    </ol>
-                                </div>
-                                
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={exportAllData}
-                                        className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                    >
-                                        💾 백업 파일 만들기
-                                    </button>
-                                    <button
-                                        onClick={() => setShowShareModal(false)}
-                                        className="flex-1 px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
-                                    >
-                                        닫기
-                                    </button>
-                                </div>
-                                
-                                <p className="text-xs text-gray-500 mt-4">
-                                    ✓ 쿼리 파라미터 방식으로 모든 앱에서 안정적으로 작동합니다!
-                                </p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
+    <title>MELON 일간 감상자수</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<MannaTracker />);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* 헤더 */
+        .header {
+            background: white;
+            border: 3px solid #00C73C;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 199, 60, 0.15);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #00C73C;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .melon-logo {
+            font-family: 'Arial Black', sans-serif;
+            font-weight: 900;
+            font-size: 1.2em;
+            color: #00C73C;
+            letter-spacing: -0.05em;
+            text-shadow: 2px 2px 0px rgba(0, 199, 60, 0.1);
+        }
+
+        /* 관리자 버튼 */
+        .admin-btn {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .admin-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(20, 184, 166, 0.6);
+        }
+
+        .admin-btn.logged-in {
+            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+        }
+
+        .admin-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        /* 로그인 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show { display: flex; }
+
+        .modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 25px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            color: #00C73C;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #00C73C;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            color: white;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
+        }
+
+        .btn-cancel {
+            background: #eeeeee;
+            color: #757575;
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        /* 날짜 선택 */
+        .date-selector {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .date-selector label {
+            font-weight: bold;
+            color: #424242;
+            font-size: 1.1em;
+        }
+
+        .date-selector input[type="date"] {
+            padding: 12px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .date-selector input[type="date"]:focus {
+            outline: none;
+            border-color: #14b8a6;
+        }
+
+        .btn-load {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-load:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+        }
+
+        .btn-add-date {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .btn-add-date.show {
+            display: inline-block;
+        }
+
+        .btn-add-date:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
+        }
+
+        /* 데이터 입력 폼 */
+        .data-form {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            display: none;
+        }
+
+        .data-form.show {
+            display: block;
+        }
+
+        .data-form h3 {
+            color: #00C73C;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .song-input-grid {
+            display: grid;
+            grid-template-columns: 60px 1fr 150px;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .song-input-header {
+            font-weight: bold;
+            color: #424242;
+            padding: 8px;
+            text-align: center;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            border-radius: 8px;
+        }
+
+        .song-input-grid input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .song-input-grid input:focus {
+            outline: none;
+            border-color: #14b8a6;
+        }
+
+        .song-input-grid input[type="number"] {
+            text-align: right;
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
+        }
+
+        /* 차트 */
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+        }
+
+        .chart-card h3 {
+            color: #00C73C;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3em;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+        }
+
+        /* 데이터 테이블 */
+        .data-table {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            overflow-x: auto;
+        }
+
+        .data-table h3 {
+            color: #00C73C;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            color: #424242;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th:first-child,
+        td:first-child {
+            text-align: center;
+            width: 60px;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 200px;
+        }
+
+        th:last-child,
+        td:last-child {
+            text-align: center;
+            width: 100px;
+        }
+
+        td:not(:nth-child(2)):not(:last-child) {
+            text-align: right;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .trend-up {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .trend-down {
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        .trend-same {
+            color: #9ca3af;
+        }
+
+        .top-song {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            font-weight: bold;
+        }
+
+        /* Firebase 상태 */
+        .firebase-status {
+            background: #fff9c4;
+            color: #f57f17;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .firebase-status.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .firebase-status.error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        /* 곡 추이 모달 */
+        .trend-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .trend-modal.show { display: flex; }
+
+        .trend-modal-content {
+            background: white;
+            padding: 35px;
+            border-radius: 25px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .trend-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .trend-modal-header h2 {
+            color: #00C73C;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-close-modal {
+            background: #eeeeee;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            color: #757575;
+            transition: all 0.3s;
+        }
+
+        .btn-close-modal:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
+
+        .trend-chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .trend-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfbff 100%);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #757575;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00C73C;
+        }
+
+        .clickable-song {
+            cursor: pointer;
+            color: #00C73C;
+            transition: all 0.2s;
+        }
+
+        .clickable-song:hover {
+            color: #00E647;
+            text-decoration: underline;
+        }
+
+        .btn-melon-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-melon-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
+        }
+
+        /* 반응형 */
+
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1400px;
+            }
+
+            .header h1 {
+                font-size: 2.2em;
+            }
+
+            .chart-container {
+                height: 550px;
+            }
+        }
+
+        @media (min-width: 1024px) and (max-width: 1399px) {
+            .container {
+                max-width: 1200px;
+            }
+
+            .header h1 {
+                font-size: 1.9em;
+            }
+
+            .chart-container {
+                height: 480px;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1023px) {
+            .header h1 {
+                font-size: 1.7em;
+            }
+
+            .melon-logo {
+                font-size: 1.15em;
+            }
+
+            .chart-container {
+                height: 420px;
+            }
+
+            .date-selector {
+                padding: 20px;
+            }
+
+            .data-table {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 0.95em;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 18px;
+                border-width: 2px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.15em;
+                flex-direction: row;
+                gap: 7px;
+            }
+
+            .melon-logo {
+                font-size: 1em;
+            }
+
+            .date-selector {
+                padding: 18px;
+                border-radius: 15px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date-selector label {
+                font-size: 1em;
+                width: 100%;
+            }
+
+            .date-selector input[type="date"] {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .btn-load,
+            .btn-add-date {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .song-input-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .song-input-header {
+                display: none;
+            }
+
+            .song-input-grid input {
+                padding: 12px;
+            }
+
+            .chart-card {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            .chart-card h3 {
+                font-size: 1.05em;
+                margin-bottom: 18px;
+            }
+
+            .chart-container {
+                height: 280px;
+            }
+
+            .admin-btn {
+                width: 48px;
+                height: 48px;
+                top: 18px;
+                right: 18px;
+            }
+
+            .admin-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .data-table {
+                padding: 18px;
+                border-radius: 15px;
+            }
+
+            .data-table h3 {
+                font-size: 1em;
+                margin-bottom: 15px;
+                flex-wrap: wrap;
+            }
+
+            .data-table h3 span {
+                font-size: 0.75em;
+                display: block;
+                margin-top: 5px;
+            }
+
+            .btn-melon-link {
+                padding: 6px 8px;
+                font-size: 0.75em;
+                border-radius: 6px;
+            }
+
+            table {
+                min-width: 700px;
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 10px 6px;
+            }
+
+            th:nth-child(1),
+            td:nth-child(1) {
+                width: 45px;
+            }
+
+            th:nth-child(2),
+            td:nth-child(2) {
+                width: 120px;
+            }
+
+            th:nth-child(3),
+            td:nth-child(3),
+            th:nth-child(4),
+            td:nth-child(4),
+            th:nth-child(5),
+            td:nth-child(5) {
+                width: 75px;
+                font-size: 0.85em;
+            }
+
+            th:nth-child(6),
+            td:nth-child(6) {
+                width: 65px;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+                width: 95%;
+            }
+
+            .modal-content h2 {
+                font-size: 1.2em;
+            }
+
+            .modal-content input {
+                padding: 12px;
+            }
+
+            .trend-modal-content {
+                padding: 20px;
+                max-width: 95%;
+            }
+
+            .trend-modal-header h2 {
+                font-size: 1.1em;
+            }
+
+            .trend-chart-container {
+                height: 280px;
+            }
+
+            .trend-stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-label {
+                font-size: 0.8em;
+            }
+
+            .stat-value {
+                font-size: 1.1em;
+            }
+
+            .data-form {
+                padding: 18px;
+                border-radius: 15px;
+            }
+
+            .data-form h3 {
+                font-size: 1em;
+            }
+
+            .btn-save {
+                padding: 12px;
+                font-size: 15px;
+            }
+
+            .firebase-status {
+                font-size: 0.85em;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1em;
+                gap: 6px;
+            }
+
+            .melon-logo {
+                font-size: 0.9em;
+            }
+
+            .date-selector,
+            .chart-card,
+            .data-table,
+            .data-form {
+                padding: 15px;
+                border-radius: 12px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .admin-btn {
+                width: 44px;
+                height: 44px;
+                top: 15px;
+                right: 15px;
+            }
+
+            .data-table h3 {
+                font-size: 0.95em;
+            }
+
+            .data-table h3 span {
+                font-size: 0.7em;
+            }
+
+            table {
+                font-size: 0.8em;
+                min-width: 650px;
+            }
+
+            th, td {
+                padding: 8px 4px;
+            }
+
+            th:nth-child(1),
+            td:nth-child(1) {
+                width: 40px;
+            }
+
+            th:nth-child(2),
+            td:nth-child(2) {
+                width: 110px;
+            }
+
+            th:nth-child(3),
+            td:nth-child(3),
+            th:nth-child(4),
+            td:nth-child(4),
+            th:nth-child(5),
+            td:nth-child(5) {
+                width: 60px;
+                font-size: 0.8em;
+            }
+
+            th:nth-child(6),
+            td:nth-child(6) {
+                width: 55px;
+            }
+
+            .btn-melon-link {
+                padding: 5px 6px;
+                font-size: 0.7em;
+            }
+
+            .trend-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content,
+            .trend-modal-content {
+                padding: 18px 15px;
+            }
+
+            .chart-card h3 {
+                font-size: 0.95em;
+            }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .no-data .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1>
+                <span class="melon-logo">MELON</span>
+                일간 감상자수
+            </h1>
+        </div>
+
+        <!-- 관리자 버튼 -->
+        <button class="admin-btn" id="adminBtn" onclick="toggleAdmin()">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+        </button>
+
+        <!-- 로그인 모달 -->
+        <div class="modal" id="loginModal">
+            <div class="modal-content">
+                <h2>🔐 관리자 로그인</h2>
+                <input type="password" id="passwordInput" placeholder="비밀번호 입력" onkeypress="if(event.key==='Enter') login()">
+                <div class="modal-buttons">
+                    <button class="btn-login" onclick="login()">로그인</button>
+                    <button class="btn-cancel" onclick="closeModal()">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 곡 추이 모달 -->
+        <div class="trend-modal" id="trendModal">
+            <div class="trend-modal-content">
+                <div class="trend-modal-header">
+                    <h2 id="trendSongName">📈 곡 추이 분석</h2>
+                    <button class="btn-close-modal" onclick="closeTrendModal()">×</button>
+                </div>
+                <div class="trend-chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="trend-stats" id="trendStats"></div>
+            </div>
+        </div>
+
+        <!-- Firebase 상태 -->
+        <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
+
+        <!-- 날짜 선택 -->
+        <div class="date-selector">
+            <label>📅 조회 날짜:</label>
+            <input type="date" id="dateSelect" onchange="loadData()">
+            <button class="btn-load" onclick="loadData()">데이터 불러오기</button>
+            <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">데이터 입력</button>
+        </div>
+
+        <!-- 데이터 입력 폼 -->
+        <div class="data-form" id="dataForm">
+            <h3>✏️ 감상자수 데이터 입력</h3>
+            <div class="song-input-grid">
+                <div class="song-input-header">순번</div>
+                <div class="song-input-header">곡명</div>
+                <div class="song-input-header">감상자수</div>
+            </div>
+            <div id="songInputs"></div>
+            <button class="btn-save" onclick="saveData()">💾 저장하기</button>
+        </div>
+
+        <!-- 차트 -->
+        <div class="chart-card">
+            <h3>📊 일간 감상자수 비교</h3>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 데이터 테이블 -->
+        <div class="data-table">
+            <h3>📋 상세 데이터 <span style="font-size: 0.8em; color: #757575; font-weight: normal;">※ 곡명 클릭 시 날짜별 추이 | 🔗 멜론 버튼으로 차트 확인</span></h3>
+            <div id="tableContent">
+                <div class="no-data">
+                    <div class="icon">📊</div>
+                    <p>날짜를 선택하고 데이터를 불러오세요</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyDk0r98Ag5htVKH-vVxUzG52SYNcX1G0sA",
+            authDomain: "analog-vol1-mv.firebaseapp.com",
+            databaseURL: "https://analog-vol1-mv-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "analog-vol1-mv",
+            storageBucket: "analog-vol1-mv.firebasestorage.app",
+            messagingSenderId: "40601613117",
+            appId: "1:40601613117:web:de43110328bc627df14b54",
+            measurementId: "G-SRN2TZCE82"
+        };
+
+        const ADMIN_PASSWORD = "@minho0728";
+        const DEFAULT_SONGS = [
+            "내 이름 아시죠",
+            "남자는 말합니다",
+            "풍악을 울려라!",
+            "잊으리오",
+            "흘로된 사랑",
+            "으라차차차",
+            "한계령",
+            "인생일기",
+            "내게 남은 사랑을 드릴께요",
+            "그저친구",
+            "마음의 나이",
+            "내 마음에 비친 내모습",
+            "그날",
+            "오십",
+            "내 곁에 있어줘",
+            "100위 곡"
+        ];
+
+        let database, isAdmin = false;
+        let barChart, trendChart;
+        let currentData = null;
+
+        // Firebase 초기화
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            document.getElementById('firebaseStatus').textContent = '✅ Firebase 연결 성공!';
+            document.getElementById('firebaseStatus').classList.add('success');
+        } catch (error) {
+            document.getElementById('firebaseStatus').textContent = '❌ Firebase 연결 실패';
+            document.getElementById('firebaseStatus').classList.add('error');
+        }
+
+        // 오늘 날짜로 초기화
+        document.getElementById('dateSelect').valueAsDate = new Date();
+
+        // 관리자 토글
+        function toggleAdmin() {
+            if (isAdmin) {
+                logout();
+            } else {
+                document.getElementById('loginModal').classList.add('show');
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById('adminBtn').classList.add('logged-in');
+                document.getElementById('btnAddDate').classList.add('show');
+                closeModal();
+                alert('✅ 관리자 로그인 성공!');
+            } else {
+                alert('❌ 비밀번호가 틀렸습니다.');
+            }
+            document.getElementById('passwordInput').value = '';
+        }
+
+        function logout() {
+            isAdmin = false;
+            document.getElementById('adminBtn').classList.remove('logged-in');
+            document.getElementById('btnAddDate').classList.remove('show');
+            document.getElementById('dataForm').classList.remove('show');
+            alert('👋 로그아웃 되었습니다.');
+        }
+
+        function closeModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        function closeTrendModal() {
+            document.getElementById('trendModal').classList.remove('show');
+            if (trendChart) {
+                trendChart.destroy();
+                trendChart = null;
+            }
+        }
+
+        // 데이터 폼 표시
+        function showDataForm() {
+            const form = document.getElementById('dataForm');
+            if (form.classList.contains('show')) {
+                form.classList.remove('show');
+            } else {
+                form.classList.add('show');
+                generateInputs();
+            }
+        }
+
+        // 입력 필드 생성
+        function generateInputs() {
+            const container = document.getElementById('songInputs');
+            container.innerHTML = '';
+            
+            DEFAULT_SONGS.forEach((song, index) => {
+                const div = document.createElement('div');
+                div.className = 'song-input-grid';
+                div.innerHTML = `
+                    <input type="text" value="${index + 1}" readonly>
+                    <input type="text" id="song_${index}" value="${song}" placeholder="곡명">
+                    <input type="number" id="count_${index}" placeholder="감상자수" min="0">
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 데이터 저장
+        async function saveData() {
+            if (!isAdmin) {
+                alert('❌ 관리자 권한이 필요합니다.');
+                return;
+            }
+
+            const date = document.getElementById('dateSelect').value;
+            if (!date) {
+                alert('❌ 날짜를 선택해주세요.');
+                return;
+            }
+
+            const data = [];
+            for (let i = 0; i < DEFAULT_SONGS.length; i++) {
+                const songName = document.getElementById(`song_${i}`).value.trim();
+                const count = parseInt(document.getElementById(`count_${i}`).value) || 0;
+                
+                if (songName) {
+                    data.push({
+                        rank: i + 1,
+                        name: songName,
+                        count: count
+                    });
+                }
+            }
+
+            if (data.length === 0) {
+                alert('❌ 데이터를 입력해주세요.');
+                return;
+            }
+
+            try {
+                await database.ref(`melon_chart/${date}`).set(data);
+                alert('✅ 데이터가 저장되었습니다!');
+                document.getElementById('dataForm').classList.remove('show');
+                loadData();
+            } catch (error) {
+                alert('❌ 저장 실패: ' + error.message);
+            }
+        }
+
+        // 데이터 불러오기
+        async function loadData() {
+            const date = document.getElementById('dateSelect').value;
+            if (!date) {
+                alert('❌ 날짜를 선택해주세요.');
+                return;
+            }
+
+            try {
+                const snapshot = await database.ref(`melon_chart/${date}`).once('value');
+                const data = snapshot.val();
+
+                if (!data || data.length === 0) {
+                    document.getElementById('tableContent').innerHTML = `
+                        <div class="no-data">
+                            <div class="icon">🔍</div>
+                            <p>${date}의 데이터가 없습니다.</p>
+                        </div>
+                    `;
+                    if (barChart) barChart.destroy();
+                    if (lineChart) lineChart.destroy();
+                    return;
+                }
+
+                currentData = data;
+                
+                // 전날 데이터 가져오기
+                const prevDate = getPreviousDate(date);
+                const prevSnapshot = await database.ref(`melon_chart/${prevDate}`).once('value');
+                const prevData = prevSnapshot.val() || [];
+
+                renderTable(data, prevData);
+                renderCharts(data);
+            } catch (error) {
+                alert('❌ 데이터 불러오기 실패: ' + error.message);
+            }
+        }
+
+        // 전날 날짜 계산
+        function getPreviousDate(dateStr) {
+            const date = new Date(dateStr);
+            date.setDate(date.getDate() - 1);
+            return date.toISOString().split('T')[0];
+        }
+
+        // 테이블 렌더링
+        function renderTable(data, prevData) {
+            const prevMap = {};
+            prevData.forEach(item => {
+                prevMap[item.name] = item.count;
+            });
+
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>순번</th>
+                            <th>곡명</th>
+                            <th>감상자수</th>
+                            <th>전날 대비</th>
+                            <th>증감률</th>
+                            <th>멜론 차트</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach(item => {
+                const prevCount = prevMap[item.name] || 0;
+                const diff = item.count - prevCount;
+                const diffPercent = prevCount > 0 ? ((diff / prevCount) * 100).toFixed(1) : 0;
+                
+                let trendClass = 'trend-same';
+                let trendSymbol = '─';
+                if (diff > 0) {
+                    trendClass = 'trend-up';
+                    trendSymbol = '▲';
+                } else if (diff < 0) {
+                    trendClass = 'trend-down';
+                    trendSymbol = '▼';
+                }
+
+                const rowClass = item.rank <= 3 ? 'top-song' : '';
+                const melonSearchUrl = `https://www.melon.com/search/total/index.htm?q=${encodeURIComponent(item.name)}&section=&searchGnbYn=Y&kkoSpl=N&kkoDpType=&linkOrText=T&ipath=srch_form`;
+
+                html += `
+                    <tr class="${rowClass}">
+                        <td>${item.rank}</td>
+                        <td><span class="clickable-song" onclick="showSongTrend('${item.name.replace(/'/g, "\\\'")}')">${item.name}</span></td>
+                        <td>${item.count.toLocaleString()}</td>
+                        <td class="${trendClass}">${trendSymbol} ${Math.abs(diff).toLocaleString()}</td>
+                        <td class="${trendClass}">${diffPercent > 0 ? '+' : ''}${diffPercent}%</td>
+                        <td><a href="${melonSearchUrl}" target="_blank" class="btn-melon-link">🔗 멜론</a></td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('tableContent').innerHTML = html;
+        }
+
+        // 차트 렌더링
+        function renderCharts(data) {
+            const labels = data.map(item => item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name);
+            const counts = data.map(item => item.count);
+
+            // 막대 그래프
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            if (barChart) barChart.destroy();
+            
+            barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '감상자수',
+                        data: counts,
+                        backgroundColor: counts.map((_, index) => {
+                            if (index < 3) return 'rgba(0, 199, 60, 0.8)';
+                            return 'rgba(20, 184, 166, 0.8)';
+                        }),
+                        borderColor: counts.map((_, index) => {
+                            if (index < 3) return 'rgba(0, 199, 60, 1)';
+                            return 'rgba(20, 184, 166, 1)';
+                        }),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '감상자수: ' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 곡 추이 표시
+        async function showSongTrend(songName) {
+            try {
+                document.getElementById('trendSongName').innerHTML = `📈 ${songName} - 날짜별 추이`;
+                document.getElementById('trendModal').classList.add('show');
+
+                // 모든 날짜 데이터 가져오기
+                const snapshot = await database.ref('melon_chart').once('value');
+                const allData = snapshot.val();
+
+                if (!allData) {
+                    alert('데이터가 없습니다.');
+                    closeTrendModal();
+                    return;
+                }
+
+                // 해당 곡의 날짜별 데이터 추출
+                const songTrend = [];
+                Object.keys(allData).sort().forEach(date => {
+                    const dayData = allData[date];
+                    const songData = dayData.find(item => item.name === songName);
+                    if (songData) {
+                        songTrend.push({
+                            date: date,
+                            count: songData.count
+                        });
+                    }
+                });
+
+                if (songTrend.length === 0) {
+                    alert('해당 곡의 데이터가 없습니다.');
+                    closeTrendModal();
+                    return;
+                }
+
+                // 통계 계산
+                const counts = songTrend.map(d => d.count);
+                const maxCount = Math.max(...counts);
+                const minCount = Math.min(...counts);
+                const avgCount = Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
+                const latestCount = counts[counts.length - 1];
+                const firstCount = counts[0];
+                const totalChange = latestCount - firstCount;
+                const changePercent = firstCount > 0 ? ((totalChange / firstCount) * 100).toFixed(1) : 0;
+
+                // 통계 표시
+                let statsHtml = `
+                    <div class="stat-card">
+                        <div class="stat-label">최고 감상자수</div>
+                        <div class="stat-value">${maxCount.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">최저 감상자수</div>
+                        <div class="stat-value">${minCount.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">평균 감상자수</div>
+                        <div class="stat-value">${avgCount.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">총 변화</div>
+                        <div class="stat-value" style="color: ${totalChange >= 0 ? '#ef4444' : '#3b82f6'}">
+                            ${totalChange >= 0 ? '▲' : '▼'} ${Math.abs(totalChange).toLocaleString()} (${changePercent > 0 ? '+' : ''}${changePercent}%)
+                        </div>
+                    </div>
+                `;
+                document.getElementById('trendStats').innerHTML = statsHtml;
+
+                // 꺾은선 그래프 생성
+                const trendCtx = document.getElementById('trendChart').getContext('2d');
+                if (trendChart) trendChart.destroy();
+
+                const labels = songTrend.map(d => {
+                    const date = new Date(d.date);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                });
+
+                trendChart = new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '감상자수',
+                            data: counts,
+                            borderColor: 'rgba(0, 199, 60, 1)',
+                            backgroundColor: 'rgba(0, 199, 60, 0.1)',
+                            tension: 0.3,
+                            borderWidth: 3,
+                            pointRadius: 6,
+                            pointBackgroundColor: 'rgba(0, 199, 60, 1)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 8,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return '감상자수: ' + context.parsed.y.toLocaleString();
+                                    },
+                                    title: function(context) {
+                                        return songTrend[context[0].dataIndex].date;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                alert('데이터 로드 실패: ' + error.message);
+                closeTrendModal();
+            }
+        }
+
+        // 초기 데이터 로드
+        loadData();
     </script>
 </body>
 </html>
