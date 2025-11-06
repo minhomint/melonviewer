@@ -1484,7 +1484,7 @@
 
             /* 모바일 차트 높이 증가 */
             .chart-container {
-                height: 450px;
+                height: 550px;
             }
 
             .chart-card {
@@ -2185,7 +2185,7 @@
 
             // 차트 라벨 생성 (모바일/PC 구분)
             const isMobile = window.innerWidth <= 768;
-            const maxLabelLength = isMobile ? 6 : 10;
+            const maxLabelLength = isMobile ? 4 : 10;
             
             const labels = sortedData.map(item => {
                 let label = item.name.length > maxLabelLength ? item.name.substring(0, maxLabelLength) + '...' : item.name;
@@ -2242,12 +2242,19 @@
                         backgroundColor: colors,
                         borderColor: borderColors,
                         borderWidth: 2,
-                        borderRadius: 6
+                        borderRadius: 6,
+                        barPercentage: isMobile ? 0.65 : 0.9,
+                        categoryPercentage: isMobile ? 0.7 : 0.8
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            bottom: isMobile ? 10 : 0
+                        }
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -2296,11 +2303,11 @@
                                 display: false
                             },
                             ticks: {
-                                maxRotation: isMobile ? 60 : 45,
-                                minRotation: isMobile ? 60 : 45,
+                                maxRotation: isMobile ? 70 : 45,
+                                minRotation: isMobile ? 70 : 45,
                                 font: { size: isMobile ? 8 : 10 },
-                                autoSkip: isMobile,
-                                maxTicksLimit: isMobile ? 8 : undefined
+                                autoSkip: false,
+                                maxTicksLimit: isMobile ? undefined : undefined
                             }
                         }
                     }
