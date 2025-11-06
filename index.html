@@ -339,14 +339,29 @@
         }
 
         /* ========== 레이아웃 ========== */
-        .top-section {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
+        .header {
             margin-bottom: var(--spacing-lg);
         }
 
-        .bottom-section {
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .calendar-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .charts-section {
             display: flex;
             flex-direction: column;
             gap: var(--spacing-lg);
@@ -998,18 +1013,34 @@
                 width: 120px;
             }
 
-            /* 상단: 달력 우측 배치 */
-            .top-section {
+            /* PC 레이아웃: 달력 우측, 차트+테이블 아래 */
+            .content-wrapper {
                 display: grid;
-                grid-template-columns: 1fr 400px;
+                grid-template-columns: 1fr 380px;
+                gap: var(--spacing-xl);
+                align-items: start;
+            }
+
+            .main-content {
+                display: flex;
+                flex-direction: column;
                 gap: var(--spacing-xl);
             }
 
-            /* 하단: 차트 + 테이블 가로 배치 */
-            .bottom-section {
+            .calendar-section {
+                position: sticky;
+                top: var(--spacing-lg);
+            }
+
+            .charts-section {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: var(--spacing-xl);
+            }
+
+            .chart-card,
+            .table-card {
+                min-height: 650px;
             }
 
             .chart-container {
@@ -1034,8 +1065,8 @@
                 max-width: 1800px;
             }
 
-            .top-section {
-                grid-template-columns: 1fr 450px;
+            .content-wrapper {
+                grid-template-columns: 1fr 420px;
             }
 
             .chart-container {
@@ -1177,134 +1208,141 @@
             </div>
         </div>
 
-        <!-- 상단: 헤더 + 달력 -->
-        <div class="top-section">
-            <div class="header">
-                <div class="header-title">
-                    <div class="main-title">WeStream Rank</div>
-                    <div class="title-divider"></div>
-                    <div class="sub-title">"우리의 스트리밍, 지금 어디까지 왔나"</div>
-                    
-                    <!-- 원클릭 링크 섹션 -->
-                    <div class="quick-links">
-                        <div class="quick-links-title">【멜론 원클릭】 2025.10.14ver [아날로그 볼륨.1]</div>
-                        <div class="quick-links-container">
-                            <a href="https://vo.la/TEIx4gn" target="_blank" class="quick-link-btn">
-                                <span class="quick-link-icon">🤖</span>
-                                <span class="quick-link-label">
-                                    <span>멜론 안드로이드</span>
-                                    <span class="quick-link-device">(삼성·엘지)</span>
-                                </span>
-                            </a>
-                            <a href="https://lrl.kr/WIYj" target="_blank" class="quick-link-btn">
-                                <span class="quick-link-icon">🍎</span>
-                                <span class="quick-link-label">
-                                    <span>멜론 아이폰</span>
-                                    <span class="quick-link-device">(iOS)</span>
-                                </span>
-                            </a>
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="header-title">
+                <div class="main-title">WeStream Rank</div>
+                <div class="title-divider"></div>
+                <div class="sub-title">"우리의 스트리밍, 지금 어디까지 왔나"</div>
+                
+                <!-- 원클릭 링크 섹션 -->
+                <div class="quick-links">
+                    <div class="quick-links-title">【멜론 원클릭】 2025.10.14ver [아날로그 볼륨.1]</div>
+                    <div class="quick-links-container">
+                        <a href="https://vo.la/TEIx4gn" target="_blank" class="quick-link-btn">
+                            <span class="quick-link-icon">🤖</span>
+                            <span class="quick-link-label">
+                                <span>멜론 안드로이드</span>
+                                <span class="quick-link-device">(삼성·엘지)</span>
+                            </span>
+                        </a>
+                        <a href="https://lrl.kr/WIYj" target="_blank" class="quick-link-btn">
+                            <span class="quick-link-icon">🍎</span>
+                            <span class="quick-link-label">
+                                <span>멜론 아이폰</span>
+                                <span class="quick-link-device">(iOS)</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 콘텐츠 영역 -->
+        <div class="content-wrapper">
+            <!-- 메인 콘텐츠 (왼쪽) -->
+            <div class="main-content">
+                <!-- 데이터 입력 폼 -->
+                <div class="data-form" id="dataForm">
+                    <h3 class="card-title">✏️ 감상자수 데이터 입력</h3>
+                    <div class="input-guide">
+                        <p><strong>💡 감상자수 확인 방법</strong></p>
+                        <p style="color: #6B7280; font-weight: normal;">
+                            PC 웹 또는 멜론 앱에서 곡을 검색하면 실시간 감상자수와 순위를 확인할 수 있습니다.
+                        </p>
+                    </div>
+                    <div class="song-input-grid">
+                        <div class="song-input-header">#</div>
+                        <div class="song-input-header">곡명</div>
+                        <div class="song-input-header">감상자수</div>
+                        <div class="song-input-header">순위</div>
+                    </div>
+                    <div id="songInputs"></div>
+                    <button class="btn-save" onclick="saveData()">💾 저장하기</button>
+                </div>
+
+                <!-- 차트 + 테이블 -->
+                <div class="charts-section">
+                    <!-- 차트 -->
+                    <div class="chart-card">
+                        <h3 class="card-title">📊 일간 감상자수 & 멜론 순위</h3>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot in-chart"></span>
+                                <span>100위권 내</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot out-chart"></span>
+                                <span>100위권 밖</span>
+                            </div>
+                        </div>
+                        <p class="chart-note">
+                            막대 그래프에 마우스를 올리면 상세 정보를 확인할 수 있습니다.
+                        </p>
+                        <div class="chart-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 테이블 -->
+                    <div class="table-card">
+                        <h3 class="card-title">📋 상세 데이터</h3>
+                        <div class="table-scroll">
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>곡명</th>
+                                        <th>감상자수</th>
+                                        <th>순위 / 차이</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="summaryTableBody">
+                                    <tr>
+                                        <td colspan="4" class="no-data">
+                                            📅 날짜를 선택하고 데이터를 불러오세요
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="calendar-card">
-                <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
+            <!-- 달력 (우측) -->
+            <div class="calendar-section">
+                <div class="calendar-card">
+                    <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
 
-                <div class="calendar-header">
-                    <div class="calendar-nav">
-                        <button class="nav-btn" onclick="changeYear(-1)">‹‹</button>
-                        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button class="nav-btn" onclick="changeYear(-1)">‹‹</button>
+                            <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                        </div>
+                        <div class="calendar-title-group">
+                            <div class="calendar-year" id="calendarYear">2025년</div>
+                            <div class="calendar-month" id="calendarMonth">1월</div>
+                        </div>
+                        <div class="calendar-nav">
+                            <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                            <button class="nav-btn" onclick="changeYear(1)">››</button>
+                        </div>
                     </div>
-                    <div class="calendar-title-group">
-                        <div class="calendar-year" id="calendarYear">2025년</div>
-                        <div class="calendar-month" id="calendarMonth">1월</div>
+
+                    <div class="weekdays">
+                        <div class="weekday">일</div>
+                        <div class="weekday">월</div>
+                        <div class="weekday">화</div>
+                        <div class="weekday">수</div>
+                        <div class="weekday">목</div>
+                        <div class="weekday">금</div>
+                        <div class="weekday">토</div>
                     </div>
-                    <div class="calendar-nav">
-                        <button class="nav-btn" onclick="changeMonth(1)">›</button>
-                        <button class="nav-btn" onclick="changeYear(1)">››</button>
-                    </div>
-                </div>
 
-                <div class="weekdays">
-                    <div class="weekday">일</div>
-                    <div class="weekday">월</div>
-                    <div class="weekday">화</div>
-                    <div class="weekday">수</div>
-                    <div class="weekday">목</div>
-                    <div class="weekday">금</div>
-                    <div class="weekday">토</div>
-                </div>
-
-                <div class="calendar-days" id="calendarDays"></div>
-                
-                <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
-            </div>
-        </div>
-
-        <!-- 데이터 입력 폼 -->
-        <div class="data-form" id="dataForm">
-            <h3 class="card-title">✏️ 감상자수 데이터 입력</h3>
-            <div class="input-guide">
-                <p><strong>💡 감상자수 확인 방법</strong></p>
-                <p style="color: #6B7280; font-weight: normal;">
-                    PC 웹 또는 멜론 앱에서 곡을 검색하면 실시간 감상자수와 순위를 확인할 수 있습니다.
-                </p>
-            </div>
-            <div class="song-input-grid">
-                <div class="song-input-header">#</div>
-                <div class="song-input-header">곡명</div>
-                <div class="song-input-header">감상자수</div>
-                <div class="song-input-header">순위</div>
-            </div>
-            <div id="songInputs"></div>
-            <button class="btn-save" onclick="saveData()">💾 저장하기</button>
-        </div>
-
-        <!-- 하단: 차트 + 테이블 -->
-        <div class="bottom-section">
-            <!-- 왼쪽: 차트 -->
-            <div class="chart-card">
-                <h3 class="card-title">📊 일간 감상자수 & 멜론 순위</h3>
-                <div class="chart-legend">
-                    <div class="legend-item">
-                        <span class="legend-dot in-chart"></span>
-                        <span>100위권 내</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-dot out-chart"></span>
-                        <span>100위권 밖</span>
-                    </div>
-                </div>
-                <p class="chart-note">
-                    막대 그래프에 마우스를 올리면 상세 정보를 확인할 수 있습니다.
-                </p>
-                <div class="chart-container">
-                    <canvas id="barChart"></canvas>
-                </div>
-            </div>
-
-            <!-- 오른쪽: 테이블 -->
-            <div class="table-card">
-                <h3 class="card-title">📋 상세 데이터</h3>
-                <div class="table-scroll">
-                    <table class="summary-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>곡명</th>
-                                <th>감상자수</th>
-                                <th>순위 / 차이</th>
-                            </tr>
-                        </thead>
-                        <tbody id="summaryTableBody">
-                            <tr>
-                                <td colspan="4" class="no-data">
-                                    📅 날짜를 선택하고 데이터를 불러오세요
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="calendar-days" id="calendarDays"></div>
+                    
+                    <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
                 </div>
             </div>
         </div>
@@ -1594,16 +1632,26 @@
         }
 
         function renderChartAndTable(data) {
-            // 100위 기준 감상자수
-            const rank100Song = data.find(item => item.chartRank === 100);
+            // 100위 기준 감상자수 찾기 (더 robust하게)
+            let rank100Song = data.find(item => item.chartRank === 100);
+            
+            // 100위가 없으면 95-105위 사이에서 가장 가까운 곡 찾기
+            if (!rank100Song) {
+                const nearbyRanks = data.filter(item => item.chartRank >= 95 && item.chartRank <= 105);
+                if (nearbyRanks.length > 0) {
+                    nearbyRanks.sort((a, b) => Math.abs(a.chartRank - 100) - Math.abs(b.chartRank - 100));
+                    rank100Song = nearbyRanks[0];
+                }
+            }
+            
             const rank100Count = rank100Song ? rank100Song.count : 0;
 
             // 차트 라벨 생성
             const labels = data.map(item => {
                 let label = item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name;
-                if (item.chartRank) {
+                if (item.chartRank && item.chartRank <= 100) {
                     label += ` (${item.chartRank}위)`;
-                } else if (rank100Count > 0) {
+                } else if (rank100Count > 0 && item.count < rank100Count) {
                     const gap = rank100Count - item.count;
                     label += ` (-${gap.toLocaleString()})`;
                 }
@@ -1652,9 +1700,9 @@
                                     const item = data[context.dataIndex];
                                     let tooltip = '감상자수: ' + context.parsed.y.toLocaleString();
                                     
-                                    if (item.chartRank) {
+                                    if (item.chartRank && item.chartRank <= 100) {
                                         tooltip += '\n멜론 순위: ' + item.chartRank + '위';
-                                    } else if (rank100Count > 0) {
+                                    } else if (rank100Count > 0 && item.count < rank100Count) {
                                         const gap = rank100Count - item.count;
                                         tooltip += '\n100위보다 ' + gap.toLocaleString() + '명 부족';
                                     }
@@ -1696,12 +1744,16 @@
             data.forEach((item, index) => {
                 let statusHtml = '';
                 
-                if (item.chartRank) {
+                if (item.chartRank && item.chartRank <= 100) {
                     statusHtml = `<span class="rank-badge in-chart">🏆 ${item.chartRank}위</span>`;
-                } else if (rank100Count > 0) {
+                } else if (rank100Count > 0 && item.count < rank100Count) {
                     const gap = rank100Count - item.count;
                     statusHtml = `<span class="rank-badge out-chart">📉 -${gap.toLocaleString()}</span>`;
+                } else if (item.chartRank) {
+                    // 100위권 밖이지만 순위는 있는 경우
+                    statusHtml = `<span class="rank-badge out-chart">${item.chartRank}위</span>`;
                 } else {
+                    // 순위 정보가 없는 경우
                     statusHtml = `<span style="color: #9CA3AF; font-weight: 600;">순위 외</span>`;
                 }
 
