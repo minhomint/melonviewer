@@ -340,7 +340,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1000px;
+            min-width: 900px;
         }
 
         th, td {
@@ -366,7 +366,7 @@
 
         th:nth-child(2),
         td:nth-child(2) {
-            width: 200px;
+            width: 250px;
         }
 
         th:nth-child(4),
@@ -375,13 +375,7 @@
             width: 80px;
         }
 
-        th:last-child,
-        td:last-child {
-            text-align: center;
-            width: 100px;
-        }
-
-        td:not(:nth-child(2)):not(:nth-child(4)):not(:last-child) {
+        td:not(:nth-child(2)):not(:nth-child(4)):not(:first-child) {
             text-align: right;
         }
 
@@ -531,27 +525,6 @@
         .clickable-song:hover {
             color: #00E647;
             text-decoration: underline;
-        }
-
-        .btn-melon-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 6px 12px;
-            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.85em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-
-        .btn-melon-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
         }
 
         /* 반응형 */
@@ -737,14 +710,8 @@
                 margin-top: 5px;
             }
 
-            .btn-melon-link {
-                padding: 6px 8px;
-                font-size: 0.75em;
-                border-radius: 6px;
-            }
-
             table {
-                min-width: 750px;
+                min-width: 700px;
                 font-size: 0.85em;
             }
 
@@ -759,12 +726,12 @@
 
             th:nth-child(2),
             td:nth-child(2) {
-                width: 120px;
+                width: 150px;
             }
 
             th:nth-child(3),
             td:nth-child(3) {
-                width: 85px;
+                width: 90px;
             }
 
             th:nth-child(4),
@@ -776,13 +743,8 @@
             td:nth-child(5),
             th:nth-child(6),
             td:nth-child(6) {
-                width: 70px;
+                width: 75px;
                 font-size: 0.85em;
-            }
-
-            th:nth-child(7),
-            td:nth-child(7) {
-                width: 65px;
             }
 
             .modal-content {
@@ -895,7 +857,7 @@
 
             table {
                 font-size: 0.8em;
-                min-width: 700px;
+                min-width: 650px;
             }
 
             th, td {
@@ -909,12 +871,12 @@
 
             th:nth-child(2),
             td:nth-child(2) {
-                width: 110px;
+                width: 130px;
             }
 
             th:nth-child(3),
             td:nth-child(3) {
-                width: 75px;
+                width: 80px;
             }
 
             th:nth-child(4),
@@ -926,18 +888,8 @@
             td:nth-child(5),
             th:nth-child(6),
             td:nth-child(6) {
-                width: 60px;
+                width: 65px;
                 font-size: 0.8em;
-            }
-
-            th:nth-child(7),
-            td:nth-child(7) {
-                width: 55px;
-            }
-
-            .btn-melon-link {
-                padding: 5px 6px;
-                font-size: 0.7em;
             }
 
             .trend-stats {
@@ -1022,6 +974,10 @@
         <!-- 데이터 입력 폼 -->
         <div class="data-form" id="dataForm">
             <h3>✏️ 감상자수 데이터 입력</h3>
+            <p style="color: #757575; font-size: 0.9em; margin-bottom: 15px;">
+                💡 <strong>감상자수 확인 방법:</strong> 
+                <a href="https://www.melon.com/chart/index.htm" target="_blank" style="color: #00C73C; text-decoration: underline;">멜론 차트</a>에서 곡을 검색하면 실시간 감상자수와 순위를 확인할 수 있습니다.
+            </p>
             <div class="song-input-grid">
                 <div class="song-input-header">순번</div>
                 <div class="song-input-header">곡명</div>
@@ -1042,7 +998,7 @@
 
         <!-- 데이터 테이블 -->
         <div class="data-table">
-            <h3>📋 상세 데이터 <span style="font-size: 0.8em; color: #757575; font-weight: normal;">※ 곡명 클릭 시 날짜별 추이 | 🔗 멜론 버튼으로 차트 확인</span></h3>
+            <h3>📋 상세 데이터 <span style="font-size: 0.8em; color: #757575; font-weight: normal;">※ 곡명 클릭: 날짜별 추이 확인 | 🔗 클릭: 멜론에서 검색</span></h3>
             <div id="tableContent">
                 <div class="no-data">
                     <div class="icon">📊</div>
@@ -1166,18 +1122,43 @@
         }
 
         // 입력 필드 생성
-        function generateInputs() {
+        async function generateInputs() {
             const container = document.getElementById('songInputs');
             container.innerHTML = '';
+            
+            // 현재 날짜의 기존 데이터 가져오기
+            const date = document.getElementById('dateSelect').value;
+            let existingData = {};
+            
+            if (date && database) {
+                try {
+                    const snapshot = await database.ref(`melon_chart/${date}`).once('value');
+                    const data = snapshot.val();
+                    if (data && Array.isArray(data)) {
+                        // 곡명을 키로 하는 맵 생성
+                        data.forEach(item => {
+                            existingData[item.name] = item;
+                        });
+                    }
+                } catch (error) {
+                    console.error('기존 데이터 로드 오류:', error);
+                }
+            }
             
             DEFAULT_SONGS.forEach((song, index) => {
                 const div = document.createElement('div');
                 div.className = 'song-input-grid';
+                
+                // 기존 데이터가 있으면 해당 값 사용
+                const existing = existingData[song] || {};
+                const count = existing.count || '';
+                const chartRank = existing.chartRank || '';
+                
                 div.innerHTML = `
                     <input type="text" value="${index + 1}" readonly>
                     <input type="text" id="song_${index}" value="${song}" placeholder="곡명">
-                    <input type="number" id="count_${index}" placeholder="감상자수" min="0">
-                    <input type="number" id="rank_${index}" placeholder="순위" min="1">
+                    <input type="number" id="count_${index}" placeholder="감상자수" min="0" value="${count}">
+                    <input type="number" id="rank_${index}" placeholder="순위" min="1" value="${chartRank}">
                 `;
                 container.appendChild(div);
             });
@@ -1336,7 +1317,6 @@
                             <th>순위</th>
                             <th>전날 대비</th>
                             <th>증감률</th>
-                            <th>멜론 차트</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1364,12 +1344,16 @@
                 html += `
                     <tr class="${rowClass}">
                         <td>${item.rank}</td>
-                        <td><span class="clickable-song" onclick="showSongTrend('${item.name.replace(/'/g, "\\\'")}')">${item.name}</span></td>
+                        <td>
+                            <span class="clickable-song" onclick="showSongTrend('${item.name.replace(/'/g, "\\\'")}')">
+                                ${item.name}
+                            </span>
+                            <a href="${melonSearchUrl}" target="_blank" style="color: #00C73C; font-size: 0.75em; margin-left: 5px; text-decoration: none;">🔗</a>
+                        </td>
                         <td>${item.count.toLocaleString()}</td>
                         <td>${rankDisplay}</td>
                         <td class="${trendClass}">${trendSymbol} ${Math.abs(diff).toLocaleString()}</td>
                         <td class="${trendClass}">${diffPercent > 0 ? '+' : ''}${diffPercent}%</td>
-                        <td><a href="${melonSearchUrl}" target="_blank" class="btn-melon-link">🔗 멜론</a></td>
                     </tr>
                 `;
             });
