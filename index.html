@@ -192,28 +192,13 @@
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
+            flex: 1;
+            min-width: 200px;
         }
 
         .date-selector input[type="date"]:focus {
             outline: none;
-            border-color: #14b8a6;
-        }
-
-        .btn-load {
-            padding: 12px 28px;
-            background: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-load:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+            border-color: #00C73C;
         }
 
         .btn-add-date {
@@ -667,7 +652,26 @@
                 padding: 12px;
             }
 
-            .btn-load,
+            .date-selector {
+                padding: 18px;
+                border-radius: 15px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .date-selector label {
+                font-size: 1em;
+                width: 100%;
+                margin-bottom: 8px;
+            }
+
+            .date-selector input[type="date"] {
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 10px;
+                min-width: auto;
+            }
+
             .btn-add-date {
                 width: 100%;
                 padding: 12px;
@@ -1012,8 +1016,7 @@
         <div class="date-selector">
             <label>📅 조회 날짜:</label>
             <input type="date" id="dateSelect" onchange="loadData()">
-            <button class="btn-load" onclick="loadData()">데이터 불러오기</button>
-            <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">데이터 입력</button>
+            <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
         </div>
 
         <!-- 데이터 입력 폼 -->
@@ -1214,12 +1217,16 @@
                 return;
             }
 
+            console.log('저장할 데이터:', date, data);
+
             try {
                 await database.ref(`melon_chart/${date}`).set(data);
+                console.log('저장 성공!');
                 alert('✅ 데이터가 저장되었습니다!');
                 document.getElementById('dataForm').classList.remove('show');
                 loadData();
             } catch (error) {
+                console.error('저장 실패:', error);
                 alert('❌ 저장 실패: ' + error.message);
             }
         }
@@ -1227,38 +1234,81 @@
         // 데이터 불러오기
         async function loadData() {
             const date = document.getElementById('dateSelect').value;
+            console.log('데이터 불러오기 시도:', date);
+            
             if (!date) {
-                alert('❌ 날짜를 선택해주세요.');
+                // 날짜가 선택되지 않은 경우 아무것도 하지 않음
+                console.log('날짜가 선택되지 않음');
+                return;
+            }
+
+            if (!database) {
+                alert('❌ Firebase 연결이 필요합니다.');
+                console.error('Firebase 연결 없음');
                 return;
             }
 
             try {
+                console.log('Firebase에서 데이터 조회 중:', `melon_chart/${date}`);
                 const snapshot = await database.ref(`melon_chart/${date}`).once('value');
                 const data = snapshot.val();
+                console.log('조회된 데이터:', data);
 
                 if (!data || data.length === 0) {
+                    console.log('데이터 없음');
                     document.getElementById('tableContent').innerHTML = `
                         <div class="no-data">
                             <div class="icon">🔍</div>
                             <p>${date}의 데이터가 없습니다.</p>
+                            <p style="font-size: 0.9em; margin-top: 10px; color: #9ca3af;">관리자가 데이터를 입력하면 자동으로 표시됩니다.</p>
                         </div>
                     `;
+                    
+                    // 차트도 초기화
+                    const barCtx = document.getElementById('barChart').getContext('2d');
                     if (barChart) barChart.destroy();
-                    if (lineChart) lineChart.destroy();
+                    barChart = new Chart(barCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: '감상자수',
+                                data: [],
+                                backgroundColor: []
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            }
+                        }
+                    });
                     return;
                 }
 
+                console.log('데이터 렌더링 시작');
                 currentData = data;
                 
                 // 전날 데이터 가져오기
                 const prevDate = getPreviousDate(date);
+                console.log('전날 데이터 조회:', prevDate);
                 const prevSnapshot = await database.ref(`melon_chart/${prevDate}`).once('value');
                 const prevData = prevSnapshot.val() || [];
 
                 renderTable(data, prevData);
                 renderCharts(data);
+                console.log('데이터 렌더링 완료');
             } catch (error) {
-                alert('❌ 데이터 불러오기 실패: ' + error.message);
+                console.error('데이터 로드 오류:', error);
+                document.getElementById('tableContent').innerHTML = `
+                    <div class="no-data">
+                        <div class="icon">❌</div>
+                        <p>데이터 불러오기 실패</p>
+                        <p style="font-size: 0.9em; margin-top: 10px; color: #9ca3af;">${error.message}</p>
+                    </div>
+                `;
             }
         }
 
@@ -1534,7 +1584,9 @@
         }
 
         // 초기 데이터 로드
-        loadData();
+        window.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
     </script>
 </body>
 </html>
