@@ -15,7 +15,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
             background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -24,42 +24,47 @@
             margin: 0 auto;
         }
 
-        /* 헤더 */
+        /* 헤더 - 모바일 최적화 */
         .header {
             background: white;
             border: 3px solid #00C73C;
-            border-radius: 20px;
-            padding: 25px 30px;
-            margin-bottom: 20px;
+            border-radius: 15px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 12px rgba(0, 199, 60, 0.15);
             text-align: center;
         }
 
         .header h1 {
             color: #00C73C;
-            font-size: 2em;
+            font-size: 1.3em;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 8px;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0, 199, 60, 0.2);
         }
 
         .melon-logo {
             font-family: 'Arial Black', sans-serif;
             font-weight: 900;
-            font-size: 1.2em;
+            font-size: 0.75em;
             color: #00C73C;
             letter-spacing: -0.05em;
-            text-shadow: 2px 2px 0px rgba(0, 199, 60, 0.1);
+            background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* 관리자 버튼 */
         .admin-btn {
             position: fixed;
-            top: 30px;
-            right: 30px;
-            width: 55px;
-            height: 55px;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
             background: linear-gradient(135deg, #14b8a6 0%, #2dd4bf 100%);
             border-radius: 50%;
             border: none;
@@ -82,8 +87,8 @@
         }
 
         .admin-btn svg {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             fill: white;
         }
 
@@ -102,27 +107,27 @@
 
         .modal-content {
             background: white;
-            padding: 35px;
-            border-radius: 25px;
-            max-width: 420px;
-            width: 90%;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 350px;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
         }
 
         .modal-content h2 {
             color: #00C73C;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-align: center;
-            font-size: 1.5em;
+            font-size: 1.3em;
         }
 
         .modal-content input {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            margin-bottom: 15px;
             transition: border-color 0.3s;
         }
 
@@ -133,16 +138,16 @@
 
         .modal-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .modal-buttons button {
             flex: 1;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             transition: all 0.3s;
         }
@@ -166,142 +171,37 @@
             background: #e0e0e0;
         }
 
-        /* 2분할 레이아웃 */
+        /* 레이아웃 */
         .main-content {
-            display: grid;
-            grid-template-columns: 450px 1fr;
-            gap: 20px;
-            align-items: start;
-        }
-
-        .left-panel {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            position: sticky;
-            top: 20px;
+            gap: 15px;
         }
 
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* 달력 카드 */
+        /* 달력 카드 - 컴팩트 */
         .calendar-card {
             background: white;
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 15px;
+            padding: 15px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             border: 1px solid #e5e7eb;
         }
 
-        /* 멜론 앱 다운로드 섹션 */
-        .melon-download {
-            background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 2px solid #00C73C;
-        }
-
-        .melon-download h3 {
-            color: #00C73C;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1em;
-            font-weight: bold;
-            line-height: 1.4;
-        }
-
-        .qr-section {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 15px;
-        }
-
-        .qr-item {
-            text-align: center;
-        }
-
-        .qr-item a {
-            display: inline-block;
-            transition: transform 0.3s;
-        }
-
-        .qr-item a:hover {
-            transform: scale(1.05);
-        }
-
-        .qr-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 8px;
-            background: white;
-            padding: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .qr-image:hover {
-            box-shadow: 0 4px 15px rgba(0, 199, 60, 0.3);
-        }
-
-        .qr-item p {
-            font-size: 0.9em;
-            color: #424242;
-            font-weight: 600;
-        }
-
-        .direct-links {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .direct-links a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: white;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #424242;
-            transition: all 0.2s;
-            border: 2px solid #e0e0e0;
-        }
-
-        .direct-links a:hover {
-            border-color: #00C73C;
-            box-shadow: 0 2px 8px rgba(0, 199, 60, 0.2);
-        }
-
-        .direct-links img {
-            width: 24px;
-            height: 24px;
-        }
-
-        /* 달력 헤더 */
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
+            margin-bottom: 12px;
         }
 
         .calendar-year {
-            font-size: 1.05em;
+            font-size: 0.9em;
             font-weight: bold;
             color: #00C73C;
         }
 
         .calendar-month {
-            font-size: 1.4em;
+            font-size: 1.1em;
             font-weight: bold;
             color: #00C73C;
             text-align: center;
@@ -309,18 +209,18 @@
 
         .calendar-nav {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .nav-btn {
             background: transparent;
             border: 2px solid #00C73C;
             color: #00C73C;
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 17px;
+            font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -335,15 +235,15 @@
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-top: 15px;
-            margin-bottom: 8px;
+            gap: 3px;
+            margin-top: 10px;
+            margin-bottom: 6px;
             text-align: center;
         }
 
         .weekday {
-            padding: 6px;
-            font-size: 0.85em;
+            padding: 3px;
+            font-size: 0.7em;
             font-weight: 600;
             color: #616161;
         }
@@ -354,7 +254,7 @@
         .calendar-days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 3px;
         }
 
         .day {
@@ -362,19 +262,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
-            font-size: 0.95em;
+            font-size: 0.8em;
             position: relative;
             background: #f9fafb;
-            min-height: 45px;
+            min-height: 32px;
+            max-height: 38px;
         }
 
         .day:hover {
             background: #ccfbf1;
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .day.selected {
@@ -393,17 +294,17 @@
 
         .day.has-data:hover {
             border-color: #00E647;
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .day.has-data::after {
             content: '';
             position: absolute;
-            bottom: 4px;
+            bottom: 3px;
             left: 50%;
             transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
+            width: 3px;
+            height: 3px;
             background: #00C73C;
             border-radius: 50%;
         }
@@ -419,17 +320,17 @@
 
         .btn-add-date {
             width: 100%;
-            padding: 14px 28px;
+            padding: 12px;
             background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
             display: none;
-            margin-top: 15px;
+            margin-top: 12px;
         }
 
         .btn-add-date.show {
@@ -445,11 +346,11 @@
         .firebase-status {
             background: #fff9c4;
             color: #f57f17;
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
             text-align: center;
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: 500;
         }
 
@@ -466,8 +367,8 @@
         /* 데이터 입력 폼 */
         .data-form {
             background: white;
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 15px;
+            padding: 15px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
             display: none;
         }
@@ -478,34 +379,33 @@
 
         .data-form h3 {
             color: #00C73C;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-size: 1.1em;
         }
 
         .song-input-grid {
             display: grid;
-            grid-template-columns: 60px 1fr 150px 100px;
-            gap: 10px;
-            margin-bottom: 15px;
+            grid-template-columns: 35px 1fr 90px 60px;
+            gap: 4px;
+            margin-bottom: 10px;
+            font-size: 0.8em;
         }
 
         .song-input-header {
             font-weight: bold;
             color: #424242;
-            padding: 8px;
+            padding: 6px;
             text-align: center;
             background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
-            border-radius: 8px;
+            border-radius: 6px;
+            font-size: 0.85em;
         }
 
         .song-input-grid input {
-            padding: 10px;
+            padding: 6px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
+            border-radius: 6px;
+            font-size: 13px;
             transition: border-color 0.3s;
         }
 
@@ -520,16 +420,16 @@
 
         .btn-save {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: linear-gradient(135deg, #00C73C 0%, #00E647 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .btn-save:hover {
@@ -537,120 +437,68 @@
             box-shadow: 0 4px 12px rgba(0, 199, 60, 0.4);
         }
 
-        /* 차트 */
+        /* 차트 - 강조! */
         .chart-card {
             background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            min-height: 350px;
+            border-radius: 15px;
+            padding: 15px;
+            padding-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0, 199, 60, 0.2);
+            border: 3px solid #00C73C;
+            animation: chartPulse 2s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 199, 60, 0.1), transparent);
+            animation: chartShine 3s ease-in-out infinite;
+        }
+
+        @keyframes chartPulse {
+            0%, 100% { box-shadow: 0 8px 24px rgba(0, 199, 60, 0.2); }
+            50% { box-shadow: 0 8px 32px rgba(0, 199, 60, 0.4); }
+        }
+
+        @keyframes chartShine {
+            0% { transform: translate(-100%, -100%) rotate(45deg); }
+            100% { transform: translate(100%, 100%) rotate(45deg); }
         }
 
         .chart-card h3 {
             color: #00C73C;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 900;
+            text-shadow: 1px 1px 2px rgba(0, 199, 60, 0.2);
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1.2em;
+        }
+
+        .chart-card h3::before {
+            content: '📊';
+            font-size: 1.3em;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
         .chart-container {
             position: relative;
-            height: 300px;
-        }
-
-        /* 데이터 테이블 */
-        .data-table {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            overflow-x: auto;
-            max-height: 500px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .data-table h3 {
-            color: #00C73C;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-            font-size: 1.2em;
-        }
-
-        #tableContent {
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 900px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        th {
-            background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
-            color: #424242;
-            font-weight: bold;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        th:first-child,
-        td:first-child {
-            text-align: center;
-            width: 60px;
-        }
-
-        th:nth-child(2),
-        td:nth-child(2) {
-            width: 250px;
-        }
-
-        th:nth-child(4),
-        td:nth-child(4) {
-            text-align: center;
-            width: 80px;
-        }
-
-        td:not(:nth-child(2)):not(:nth-child(4)):not(:first-child) {
-            text-align: right;
-        }
-
-        tr:hover {
-            background: #f9fafb;
-        }
-
-        .trend-up {
-            color: #ef4444;
-            font-weight: bold;
-        }
-
-        .trend-down {
-            color: #3b82f6;
-            font-weight: bold;
-        }
-
-        .trend-same {
-            color: #9ca3af;
-        }
-
-        .top-song {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            font-weight: bold;
+            height: 450px;
+            z-index: 1;
         }
 
         /* 곡 추이 모달 */
@@ -669,9 +517,9 @@
 
         .trend-modal-content {
             background: white;
-            padding: 35px;
-            border-radius: 25px;
-            max-width: 900px;
+            padding: 20px;
+            border-radius: 20px;
+            max-width: 95%;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -682,28 +530,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .trend-modal-header h2 {
             color: #00C73C;
-            font-size: 1.5em;
+            font-size: 1.2em;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-close-modal {
             background: #eeeeee;
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3em;
+            font-size: 1.2em;
             color: #757575;
             transition: all 0.3s;
         }
@@ -715,118 +563,128 @@
 
         .trend-chart-container {
             position: relative;
-            height: 400px;
-            margin-bottom: 20px;
+            height: 300px;
+            margin-bottom: 15px;
         }
 
         .trend-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .stat-card {
             background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 12px;
+            border-radius: 10px;
             text-align: center;
         }
 
         .stat-label {
-            font-size: 0.85em;
+            font-size: 0.75em;
             color: #757575;
             margin-bottom: 5px;
         }
 
         .stat-value {
-            font-size: 1.3em;
+            font-size: 1.1em;
             font-weight: bold;
             color: #00C73C;
         }
 
-        .clickable-song {
-            cursor: pointer;
-            color: #00C73C;
-            transition: all 0.2s;
-        }
-
-        .clickable-song:hover {
-            color: #00E647;
-            text-decoration: underline;
-        }
-
         .no-data {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: #9ca3af;
         }
 
         .no-data .icon {
-            font-size: 3em;
-            margin-bottom: 15px;
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
 
         /* 입력 가이드 */
         .input-guide {
             background: linear-gradient(135deg, #F5FFF5 0%, #EFFFEF 100%);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
         }
 
         .input-guide p {
             color: #424242;
-            font-size: 0.95em;
-            margin-bottom: 12px;
+            font-size: 0.85em;
+            margin-bottom: 8px;
             font-weight: 600;
         }
 
-        /* 반응형 */
+        /* PC 반응형 */
         @media (min-width: 769px) {
-            .direct-links {
-                display: none !important;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .qr-section {
-                display: none !important;
-            }
-            
-            .direct-links {
-                display: flex !important;
+            body {
+                padding: 20px;
             }
 
-            .melon-download h3 {
+            .header {
+                padding: 20px 25px;
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .melon-logo {
+                font-size: 0.8em;
+            }
+
+            .admin-btn {
+                top: 30px;
+                right: 30px;
+                width: 55px;
+                height: 55px;
+            }
+
+            .admin-btn svg {
+                width: 28px;
+                height: 28px;
+            }
+
+            .main-content {
+                display: grid;
+                grid-template-columns: 400px 1fr;
+                gap: 20px;
+                align-items: start;
+            }
+
+            .calendar-card {
+                position: sticky;
+                top: 20px;
+                padding: 20px;
+            }
+
+            .day {
+                min-height: 40px;
+                max-height: 48px;
                 font-size: 0.9em;
             }
 
-            .main-content {
-                grid-template-columns: 1fr;
+            .chart-card,
+            .data-form {
+                padding: 20px;
             }
 
-            .left-panel {
-                position: static;
+            .chart-container {
+                height: 450px;
             }
-        }
-
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-
-            .left-panel {
-                position: static;
-            }
-        }
 
         @media (min-width: 1400px) {
             .main-content {
                 grid-template-columns: 500px 1fr;
             }
+            
             .chart-container {
-                height: 350px;
+                height: 550px;
             }
         }
     </style>
@@ -876,96 +734,48 @@
 
         <!-- 메인 레이아웃 -->
         <div class="main-content">
-            <!-- 왼쪽 패널 -->
-            <div class="left-panel">
-                <!-- 멜론 원클릭 -->
-                <div class="melon-download">
-                    <h3>【멜론 원클릭】 2025.10.14ver [아날로그 볼륨.1]</h3>
-                    
-                    <!-- QR 코드 (PC/태블릿용) -->
-                    <div class="qr-section">
-                        <div class="qr-item">
-                            <a href="https://vo.la/TEIx4gn" target="_blank">
-                            <img src="
-data:image/png;base64,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" alt="멜론 원클릭 안드로이드" class="qr-image">
-                            </a>
-                            <p>안드로이드</p>
-                        </div>
-                        <div class="qr-item">
-                            <a href="https://lrl.kr/WIYj" target="_blank">
-                            <img src="
-data:image/png;base64,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" alt="멜론 원클릭 아이폰" class="qr-image">
-                            </a>
-                            <p>아이폰</p>
-                        </div>
-                    </div>
+            <!-- 왼쪽: 달력 -->
+            <div class="calendar-card">
+                <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
 
-                    <!-- 다이렉트 링크 (모바일용) -->
-                    <div class="direct-links">
-                        <a href="https://vo.la/TEIx4gn" target="_blank">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#00C73C" style="width: 24px; height: 24px;">
-                                <path d="M17.523 15.3414c-.5511-.0511-.9993-.4977-.9993-1.0497v-5.0833c0-.5521.4482-.9986.9993-1.0498.5008-.0465.9297.3421.9297.8421v4.4167c0 .5 .4289.8886.9297.8421.5511-.0512.9993-.4978.9993-1.0498v-4.4167c0-.5521-.4482-.9987-.9993-1.0498-.5008-.0466-.9297.3421-.9297.8421v4.4167c0 .5 -.4289.8886-.9297.8421-.5511-.0511-.9993-.4977-.9993-1.0497v-5.0833c0-.5521.4482-.9986.9993-1.0498.5008-.0465.9297.3421.9297.8421v4.4167c0 .5 .4289.8886.9297.8421.5511-.0512.9993-.4978.9993-1.0498v-4.4167c0-.5521-.4482-.9987-.9993-1.0498C20.0127 7.0465 19.5838 7.435 19.5838 7.935v4.4167c0 .5 -.4289.8886-.9297.8421-.5511-.0511-.9993-.4977-.9993-1.0497v-5.0833c0-.5521.4482-.9986.9993-1.0498.5008-.0465.9297.3421.9297.8421v4.4167M6.477 15.3414c.5511-.0511.9993-.4977.9993-1.0497v-5.0833c0-.5521-.4482-.9986-.9993-1.0498-.5008-.0465-.9297.3421-.9297.8421v4.4167c0 .5-.4289.8886-.9297.8421-.5511-.0512-.9993-.4978-.9993-1.0498v-4.4167c0-.5521.4482-.9987.9993-1.0498.5008-.0466.9297.3421.9297.8421v4.4167c0 .5.4289.8886.9297.8421.5511-.0511.9993-.4977.9993-1.0497v-5.0833c0-.5521-.4482-.9986-.9993-1.0498-.5008-.0465-.9297.3421-.9297.8421v4.4167c0 .5-.4289.8886-.9297.8421-.5511-.0512-.9993-.4978-.9993-1.0498v-4.4167c0-.5521.4482-.9987.9993-1.0498.5008-.0466.9297.3421.9297.8421v4.4167c0 .5.4289.8886.9297.8421.5511-.0511.9993-.4977.9993-1.0497v-5.0833c0-.5521-.4482-.9986-.9993-1.0498-.5008-.0465-.9297.3421-.9297.8421v4.4167"/>
-                            </svg>
-                            <div style="flex: 1;">
-                                <div style="font-size: 0.75em; color: #757575;">안드로이드</div>
-                                <div style="font-size: 0.85em; font-weight: 600; color: #00C73C;">멜론 원클릭</div>
-                            </div>
-                        </a>
-                        <a href="https://lrl.kr/WIYj" target="_blank">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#000000" style="width: 24px; height: 24px;">
-                                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                            </svg>
-                            <div style="flex: 1;">
-                                <div style="font-size: 0.75em; color: #757575;">아이폰</div>
-                                <div style="font-size: 0.85em; font-weight: 600; color: #424242;">멜론 원클릭</div>
-                            </div>
-                        </a>
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button class="nav-btn" onclick="changeYear(-1)">‹‹</button>
+                        <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="calendar-year" id="calendarYear">2025년</div>
+                        <div class="calendar-month" id="calendarMonth">1월</div>
+                    </div>
+                    <div class="calendar-nav">
+                        <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                        <button class="nav-btn" onclick="changeYear(1)">››</button>
                     </div>
                 </div>
 
-                <!-- 달력 카드 -->
-                <div class="calendar-card">
-                    <div class="firebase-status" id="firebaseStatus">Firebase 연결 중...</div>
-
-                    <div class="calendar-header">
-                        <div class="calendar-nav">
-                            <button class="nav-btn" onclick="changeYear(-1)">‹‹</button>
-                            <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-                        </div>
-                        <div style="text-align: center;">
-                            <div class="calendar-year" id="calendarYear">2025년</div>
-                            <div class="calendar-month" id="calendarMonth">1월</div>
-                        </div>
-                        <div class="calendar-nav">
-                            <button class="nav-btn" onclick="changeMonth(1)">›</button>
-                            <button class="nav-btn" onclick="changeYear(1)">››</button>
-                        </div>
-                    </div>
-
-                    <div class="weekdays">
-                        <div class="weekday">일</div>
-                        <div class="weekday">월</div>
-                        <div class="weekday">화</div>
-                        <div class="weekday">수</div>
-                        <div class="weekday">목</div>
-                        <div class="weekday">금</div>
-                        <div class="weekday">토</div>
-                    </div>
-
-                    <div class="calendar-days" id="calendarDays"></div>
-                    
-                    <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
+                <div class="weekdays">
+                    <div class="weekday">일</div>
+                    <div class="weekday">월</div>
+                    <div class="weekday">화</div>
+                    <div class="weekday">수</div>
+                    <div class="weekday">목</div>
+                    <div class="weekday">금</div>
+                    <div class="weekday">토</div>
                 </div>
+
+                <div class="calendar-days" id="calendarDays"></div>
+                
+                <button class="btn-add-date" id="btnAddDate" onclick="showDataForm()">✏️ 데이터 입력</button>
             </div>
 
-            <!-- 오른쪽 패널 -->
-            <div class="right-panel">
+            <!-- 오른쪽: 차트 & 테이블 -->
+            <div>
                 <!-- 데이터 입력 폼 -->
                 <div class="data-form" id="dataForm">
                     <h3>✏️ 감상자수 데이터 입력</h3>
                     <div class="input-guide">
                         <p>💡 <strong>감상자수 확인 방법</strong></p>
-                        <p style="color: #757575; font-size: 0.9em; font-weight: normal;">
+                        <p style="color: #757575; font-size: 0.85em; font-weight: normal;">
                             PC 웹 또는 멜론 앱에서 곡을 검색하면 실시간 감상자수와 순위를 확인할 수 있습니다.
                         </p>
                     </div>
@@ -979,24 +789,18 @@ data:image/png;base64,UklGRrYaAABXRUJQVlA4WAoAAAAgAAAA3wAA3wAASUNDUMgBAAAAAAHIAA
                     <button class="btn-save" onclick="saveData()">💾 저장하기</button>
                 </div>
 
-                <!-- 차트 -->
+                <!-- 차트 - 강조! -->
                 <div class="chart-card">
-                    <h3>📊 일간 감상자수 비교</h3>
+                    <h3>일간 감상자수 & 멜론 순위</h3>
+                    <p style="font-size: 0.75em; color: #757575; margin-bottom: 10px; margin-top: -10px;">
+                        🟢 초록: 100위권 내 | 🔴 빨강: 100위권 밖 (100위와 차이 표시)
+                    </p>
                     <div class="chart-container">
                         <canvas id="barChart"></canvas>
                     </div>
                 </div>
 
-                <!-- 데이터 테이블 -->
-                <div class="data-table">
-                    <h3>📋 상세 데이터 <span style="font-size: 0.8em; color: #757575; font-weight: normal;">※ 곡명 클릭: 날짜별 추이 확인 | 🔗 클릭: 멜론에서 검색</span></h3>
-                    <div id="tableContent">
-                        <div class="no-data">
-                            <div class="icon">📊</div>
-                            <p>날짜를 선택하고 데이터를 불러오세요</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -1248,13 +1052,6 @@ data:image/png;base64,UklGRrYaAABXRUJQVlA4WAoAAAAgAAAA3wAA3wAASUNDUMgBAAAAAAHIAA
                 const data = snapshot.val();
 
                 if (!data || data.length === 0) {
-                    document.getElementById('tableContent').innerHTML = `
-                        <div class="no-data">
-                            <div class="icon">🔍</div>
-                            <p>${dateKey}의 데이터가 없습니다.</p>
-                        </div>
-                    `;
-                    
                     const barCtx = document.getElementById('barChart').getContext('2d');
                     if (barChart) barChart.destroy();
                     barChart = new Chart(barCtx, {
@@ -1266,68 +1063,46 @@ data:image/png;base64,UklGRrYaAABXRUJQVlA4WAoAAAAgAAAA3wAA3wAASUNDUMgBAAAAAAHIAA
                 }
 
                 currentData = data;
-                const prevDate = getPreviousDate(dateKey);
-                const prevSnapshot = await database.ref(`melon_chart/${prevDate}`).once('value');
-                const prevData = prevSnapshot.val() || [];
-
-                renderTable(data, prevData);
                 renderCharts(data);
             } catch (error) {
                 console.error('데이터 로드 오류:', error);
             }
         }
 
-        function getPreviousDate(dateStr) {
-            const date = new Date(dateStr);
-            date.setDate(date.getDate() - 1);
-            return date.toISOString().split('T')[0];
-        }
-
-        function renderTable(data, prevData) {
-            const prevMap = {};
-            prevData.forEach(item => {
-                prevMap[item.name] = item.count;
-            });
-
-            let html = `<table><thead><tr><th>순번</th><th>곡명</th><th>감상자수</th><th>순위</th><th>전날 대비</th><th>증감률</th></tr></thead><tbody>`;
-
-            data.forEach(item => {
-                const prevCount = prevMap[item.name] || 0;
-                const diff = item.count - prevCount;
-                const diffPercent = prevCount > 0 ? ((diff / prevCount) * 100).toFixed(1) : 0;
-                
-                let trendClass = 'trend-same', trendSymbol = '─';
-                if (diff > 0) { trendClass = 'trend-up'; trendSymbol = '▲'; }
-                else if (diff < 0) { trendClass = 'trend-down'; trendSymbol = '▼'; }
-
-                const rowClass = item.rank <= 3 ? 'top-song' : '';
-                const melonSearchUrl = `https://www.melon.com/search/total/index.htm?q=${encodeURIComponent(item.name)}&section=&searchGnbYn=Y&kkoSpl=N&kkoDpType=&linkOrText=T&ipath=srch_form`;
-                const rankDisplay = item.chartRank ? item.chartRank : '-';
-
-                html += `
-                    <tr class="${rowClass}">
-                        <td>${item.rank}</td>
-                        <td>
-                            <span class="clickable-song" onclick="showSongTrend('${item.name.replace(/'/g, "\\'")}')">
-                                ${item.name}
-                            </span>
-                            <a href="${melonSearchUrl}" target="_blank" style="color: #00C73C; font-size: 0.75em; margin-left: 5px; text-decoration: none;">🔗</a>
-                        </td>
-                        <td>${item.count.toLocaleString()}</td>
-                        <td>${rankDisplay}</td>
-                        <td class="${trendClass}">${trendSymbol} ${Math.abs(diff).toLocaleString()}</td>
-                        <td class="${trendClass}">${diffPercent > 0 ? '+' : ''}${diffPercent}%</td>
-                    </tr>
-                `;
-            });
-
-            html += `</tbody></table>`;
-            document.getElementById('tableContent').innerHTML = html;
-        }
-
         function renderCharts(data) {
-            const labels = data.map(item => item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name);
+            // 100위 기준 감상자수 계산 (100위 곡의 감상자수)
+            const rank100Song = data.find(item => item.chartRank === 100);
+            const rank100Count = rank100Song ? rank100Song.count : 0;
+
+            const labels = data.map(item => {
+                let label = item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name;
+                // 순위 정보 추가
+                if (item.chartRank) {
+                    label += ` (${item.chartRank}위)`;
+                } else if (rank100Count > 0) {
+                    const gap = rank100Count - item.count;
+                    label += ` (-${gap.toLocaleString()})`;
+                }
+                return label;
+            });
             const counts = data.map(item => item.count);
+
+            // 색상: 100위권 내면 초록, 밖이면 빨강
+            const colors = data.map(item => {
+                if (item.chartRank && item.chartRank <= 100) {
+                    return 'rgba(0, 199, 60, 0.8)';
+                } else {
+                    return 'rgba(239, 68, 68, 0.8)';
+                }
+            });
+
+            const borderColors = data.map(item => {
+                if (item.chartRank && item.chartRank <= 100) {
+                    return 'rgba(0, 199, 60, 1)';
+                } else {
+                    return 'rgba(239, 68, 68, 1)';
+                }
+            });
 
             const barCtx = document.getElementById('barChart').getContext('2d');
             if (barChart) barChart.destroy();
@@ -1339,8 +1114,8 @@ data:image/png;base64,UklGRrYaAABXRUJQVlA4WAoAAAAgAAAA3wAA3wAASUNDUMgBAAAAAAHIAA
                     datasets: [{
                         label: '감상자수',
                         data: counts,
-                        backgroundColor: counts.map((_, index) => index < 3 ? 'rgba(0, 199, 60, 0.8)' : 'rgba(20, 184, 166, 0.8)'),
-                        borderColor: counts.map((_, index) => index < 3 ? 'rgba(0, 199, 60, 1)' : 'rgba(20, 184, 166, 1)'),
+                        backgroundColor: colors,
+                        borderColor: borderColors,
                         borderWidth: 2
                     }]
                 },
@@ -1352,7 +1127,17 @@ data:image/png;base64,UklGRrYaAABXRUJQVlA4WAoAAAAgAAAA3wAA3wAASUNDUMgBAAAAAAHIAA
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return '감상자수: ' + context.parsed.y.toLocaleString();
+                                    const item = data[context.dataIndex];
+                                    let tooltip = '감상자수: ' + context.parsed.y.toLocaleString();
+                                    
+                                    if (item.chartRank) {
+                                        tooltip += '\n멜론 순위: ' + item.chartRank + '위';
+                                    } else if (rank100Count > 0) {
+                                        const gap = rank100Count - item.count;
+                                        tooltip += '\n100위보다 ' + gap.toLocaleString() + '명 부족';
+                                    }
+                                    
+                                    return tooltip;
                                 }
                             }
                         }
@@ -1369,7 +1154,10 @@ data:image/png;base64,UklGRrYaAABXRUJQVlA4WAoAAAAgAAAA3wAA3wAASUNDUMgBAAAAAAHIAA
                         x: {
                             ticks: {
                                 maxRotation: 45,
-                                minRotation: 45
+                                minRotation: 45,
+                                font: {
+                                    size: 9
+                                }
                             }
                         }
                     }
@@ -1417,21 +1205,21 @@ data:image/png;base64,UklGRrYaAABXRUJQVlA4WAoAAAAgAAAA3wAA3wAASUNDUMgBAAAAAAHIAA
 
                 let statsHtml = `
                     <div class="stat-card">
-                        <div class="stat-label">최고 감상자수</div>
+                        <div class="stat-label">최고</div>
                         <div class="stat-value">${maxCount.toLocaleString()}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">최저 감상자수</div>
+                        <div class="stat-label">최저</div>
                         <div class="stat-value">${minCount.toLocaleString()}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">평균 감상자수</div>
+                        <div class="stat-label">평균</div>
                         <div class="stat-value">${avgCount.toLocaleString()}</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">총 변화</div>
                         <div class="stat-value" style="color: ${totalChange >= 0 ? '#ef4444' : '#3b82f6'}">
-                            ${totalChange >= 0 ? '▲' : '▼'} ${Math.abs(totalChange).toLocaleString()} (${changePercent > 0 ? '+' : ''}${changePercent}%)
+                            ${totalChange >= 0 ? '▲' : '▼'} ${Math.abs(totalChange).toLocaleString()}
                         </div>
                     </div>
                 `;
