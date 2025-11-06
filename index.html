@@ -789,9 +789,9 @@
         }
 
         .rank-badge.out-chart {
-            background: linear-gradient(135deg, #CCFBF1 0%, #99F6E4 100%);
-            color: #134E4A;
-            border: 1px solid #5EEAD4;
+            background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
+            color: #075985;
+            border: 1px solid #7DD3FC;
         }
 
         /* ========== 데이터 입력 폼 ========== */
@@ -1320,7 +1320,7 @@
                                 <span>100위 기준선</span>
                             </div>
                             <div class="legend-item">
-                                <span class="legend-dot" style="background: #14b8a6;"></span>
+                                <span class="legend-dot" style="background: #7DD3FC;"></span>
                                 <span>순위 밖</span>
                             </div>
                         </div>
@@ -1680,19 +1680,24 @@
         }
 
         function renderChartAndTable(data) {
-            // 100위 기준 감상자수 찾기
+            // 100위 기준 감상자수 찾기 - 더 넓은 범위로 확장
             let rank100Song = data.find(item => item.chartRank === 100);
             
-            // 100위가 없으면 95-105위 사이에서 가장 가까운 곡 찾기
+            // 100위가 없으면 순위가 있는 곡 중에서 가장 낮은 순위를 기준으로 사용
             if (!rank100Song) {
-                const nearbyRanks = data.filter(item => item.chartRank >= 95 && item.chartRank <= 105);
-                if (nearbyRanks.length > 0) {
-                    nearbyRanks.sort((a, b) => Math.abs(a.chartRank - 100) - Math.abs(b.chartRank - 100));
-                    rank100Song = nearbyRanks[0];
+                const rankedSongs = data.filter(item => item.chartRank);
+                if (rankedSongs.length > 0) {
+                    // 가장 낮은 순위(가장 큰 숫자) 찾기
+                    rankedSongs.sort((a, b) => b.chartRank - a.chartRank);
+                    rank100Song = rankedSongs[0];
+                    console.log('100위 곡 없음, 대신 사용:', rank100Song.name, rank100Song.chartRank + '위');
                 }
+            } else {
+                console.log('100위 곡 발견:', rank100Song.name);
             }
             
             const rank100Count = rank100Song ? rank100Song.count : 0;
+            console.log('100위 기준 감상자수:', rank100Count);
 
             // 데이터 정렬: 순위 진입곡(1-99위) → 100위 곡 → 순위 밖 곡
             const sortedData = [...data].sort((a, b) => {
@@ -1700,21 +1705,30 @@
                 const bIs100 = b.chartRank === 100;
                 const aInTop99 = a.chartRank && a.chartRank < 100;
                 const bInTop99 = b.chartRank && b.chartRank < 100;
+                const aHasRank = a.chartRank && a.chartRank > 0;
+                const bHasRank = b.chartRank && b.chartRank > 0;
                 
-                // 1-99위는 맨 앞
+                // 1-99위는 맨 앞, 순위 순서대로
+                if (aInTop99 && bInTop99) return a.chartRank - b.chartRank;
                 if (aInTop99 && !bInTop99) return -1;
                 if (!aInTop99 && bInTop99) return 1;
                 
-                // 1-99위 사이에서는 순위 순서
-                if (aInTop99 && bInTop99) return a.chartRank - b.chartRank;
-                
                 // 100위는 1-99위 다음
-                if (aIs100 && !bIs100 && !bInTop99) return -1;
-                if (!aIs100 && !aInTop99 && bIs100) return 1;
+                if (aIs100 && !bIs100) return -1;
+                if (!aIs100 && bIs100) return 1;
+                
+                // 100위 초과 순위는 그 다음
+                if (aHasRank && !aIs100 && !aInTop99 && !bHasRank) return -1;
+                if (!aHasRank && bHasRank && !bIs100 && !bInTop99) return 1;
+                
+                // 순위 있는 것끼리는 순위 순서
+                if (aHasRank && bHasRank) return a.chartRank - b.chartRank;
                 
                 // 나머지는 원래 순서 유지
                 return data.indexOf(a) - data.indexOf(b);
             });
+
+            console.log('정렬된 데이터:', sortedData.map(d => `${d.name} (${d.chartRank || '순위없음'}위)`));
 
             // 차트 라벨 생성
             const labels = sortedData.map(item => {
@@ -1723,23 +1737,28 @@
                     label += ` (${item.chartRank}위)`;
                 } else if (item.chartRank && item.chartRank < 100) {
                     label += ` (${item.chartRank}위)`;
-                } else if (rank100Count > 0 && item.count < rank100Count) {
+                } else if (rank100Count > 0) {
                     const gap = rank100Count - item.count;
-                    label += ` (-${gap.toLocaleString()})`;
+                    if (gap > 0) {
+                        label += ` (-${gap.toLocaleString()})`;
+                    }
                 }
                 return label;
             });
 
             const counts = sortedData.map(item => item.count);
             const colors = sortedData.map(item => {
-                if (item.chartRank === 100) return 'rgba(239, 68, 68, 0.85)'; // 100위: 빨강
+                if (item.chartRank === 100) {
+                    console.log('빨강색 적용:', item.name);
+                    return 'rgba(239, 68, 68, 0.85)'; // 100위: 빨강
+                }
                 if (item.chartRank && item.chartRank < 100) return 'rgba(0, 199, 60, 0.85)'; // 1-99위: 초록
-                return 'rgba(20, 184, 166, 0.85)'; // 순위 밖: 민트
+                return 'rgba(125, 211, 252, 0.85)'; // 순위 밖: 연한 하늘색
             });
             const borderColors = sortedData.map(item => {
                 if (item.chartRank === 100) return 'rgba(239, 68, 68, 1)';
                 if (item.chartRank && item.chartRank < 100) return 'rgba(0, 199, 60, 1)';
-                return 'rgba(20, 184, 166, 1)';
+                return 'rgba(56, 189, 248, 1)'; // 순위 밖: 하늘색
             });
 
             // 차트 렌더링
@@ -1780,9 +1799,11 @@
                                         tooltip += '\n🎯 100위 기준선';
                                     } else if (item.chartRank && item.chartRank < 100) {
                                         tooltip += '\n멜론 순위: ' + item.chartRank + '위';
-                                    } else if (rank100Count > 0 && item.count < rank100Count) {
+                                    } else if (rank100Count > 0) {
                                         const gap = rank100Count - item.count;
-                                        tooltip += '\n100위보다 ' + gap.toLocaleString() + '명 부족';
+                                        if (gap > 0) {
+                                            tooltip += '\n100위보다 ' + gap.toLocaleString() + '명 부족';
+                                        }
                                     }
                                     
                                     return tooltip;
@@ -1830,18 +1851,21 @@
                 else if (item.chartRank && item.chartRank < 100) {
                     statusHtml = `<span class="rank-badge in-chart">🏆 ${item.chartRank}위</span>`;
                 }
-                // 순위 밖 - 차이 표시 (민트색 배지)
+                // 순위 밖 - 100위 기준으로 차이 표시 (민트색 배지)
                 else if (rank100Count > 0) {
                     const gap = rank100Count - item.count;
                     if (gap > 0) {
                         statusHtml = `<span class="rank-badge out-chart">📉 -${gap.toLocaleString()}</span>`;
-                    } else {
+                    } else if (gap < 0) {
+                        // 감상자수는 많은데 순위가 없는 경우
                         statusHtml = `<span style="color: #9CA3AF; font-weight: 600;">순위 미집계</span>`;
+                    } else {
+                        statusHtml = `<span style="color: #9CA3AF; font-weight: 600;">순위 외</span>`;
                     }
                 }
                 // 100위 기준이 없는 경우
                 else {
-                    if (item.chartRank) {
+                    if (item.chartRank && item.chartRank > 100) {
                         statusHtml = `<span class="rank-badge out-chart">${item.chartRank}위</span>`;
                     } else {
                         statusHtml = `<span style="color: #9CA3AF; font-weight: 600;">순위 외</span>`;
