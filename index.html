@@ -1869,7 +1869,7 @@
         const DEFAULT_SONGS = [
             "내 이름 아시죠", "남자는 말합니다", "풍악을 울려라!", "잊으리오", "흘로된 사랑",
             "으라차차차", "한계령", "인생일기", "내게 남은 사랑을 드릴께요", "그저친구",
-            "마음의 나이", "내 마음에 비친 내모습", "그날", "오십", "내곁에 있어주", "100위 곡()"
+            "마음의 나이", "내 마음에 비친 내모습", "그날", "오십", "내곁에 있어주", "100위 곡"
         ];
 
         let database, isAdmin = false, barChart, trendChart;
@@ -2388,7 +2388,7 @@
                 else if (rank100Count > 0) {
                     const gap = rank100Count - item.count;
                     if (gap > 0) {
-                        statusHtml = `<span class="rank-badge out-chart">📉 <span class="badge-number">-${gap.toLocaleString()}</span></span>`;
+                        statusHtml = `<span class="rank-badge out-chart"><span class="badge-number">-${gap.toLocaleString()}</span></span>`;
                     } else if (gap < 0) {
                         // 감상자수는 많은데 순위가 없는 경우
                         statusHtml = `<span style="color: #9CA3AF; font-weight: 600; font-size: 0.8125rem;">순위 미집계</span>`;
